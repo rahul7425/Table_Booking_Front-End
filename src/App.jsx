@@ -21,6 +21,7 @@ import Blog from './components/Pages/Blog/BlogsList';
 import CreateBlog from './components/Pages/Blog/CreateBlog';
 import BlogDetails from './components/Pages/Blog/BlogDetails';
 import BlogComments from './components/Pages/Blog/BlogComments';
+// import Coupons from './components/Pages/Coupon/CouponManagement';
 
 const Layout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -74,6 +75,7 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/blog/edit/:id" element={<CreateBlog />} />
         <Route path="/blog/:id/comments" element={<BlogComments />} />
+        {/* <Route path="/coupons" element={<Coupons />} /> */}
         
       </Route>
     </Routes>
