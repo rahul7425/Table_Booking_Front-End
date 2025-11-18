@@ -82,7 +82,7 @@ const CreateBlog = () => {
             });
 
             toast.success('Blog created successfully!');
-            navigate('/blogs');
+            navigate('/blog');
         } catch (error) {
             console.error('Error creating blog:', error);
             if (error.response?.data?.message) {
@@ -111,7 +111,7 @@ const CreateBlog = () => {
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <Link
-                        to="/blogs"
+                        to="/blog"
                         className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                         <ArrowLeft className="h-5 w-5" />
@@ -285,7 +285,7 @@ const CreateBlog = () => {
                     {/* Submit Button */}
                     <div className="flex justify-end gap-4 mt-8 pt-6 border-t">
                         <Link
-                            to="/blogs"
+                            to="/blog"
                             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                         >
                             Cancel

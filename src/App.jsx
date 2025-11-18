@@ -85,7 +85,9 @@ function App() {
         <Route path="/blog/create" element={<CreateBlog />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/blog/edit/:id" element={<CreateBlog />} />
-        <Route path="/blog/:id/comments" element={<BlogComments />} />
+        {/* <Route path="/blog/:id/comments" element={<BlogComments />} /> */}
+                <Route path="/blog/comments/:blogId" element={<BlogComments />} />
+
 
         <Route path="/reviews" element={<ReviewsList />} />
         <Route path="/reviews/top-businesses" element={<TopBusinesses />} />
