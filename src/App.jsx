@@ -33,6 +33,7 @@ import ItemsMain from './components/Pages/Items/ItemsMain';
 import Tables from './components/Pages/Tables/Tables';
 import Schedules from './components/Pages/Schedules/Schedules';
 import SlotSets from './components/Pages/Slots/SlotSets';
+// import Coupons from './components/Pages/Coupon/CouponManagement';
 
 const Layout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -105,6 +106,8 @@ function App() {
         <Route path="/schedules" element={<Schedules />} />
         <Route path="/slotsets" element={<SlotSets />} />
 
+        {/* <Route path="/coupons" element={<Coupons />} /> */}
+        
       </Route>
     </Routes>
   );

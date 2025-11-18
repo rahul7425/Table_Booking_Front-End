@@ -47,6 +47,7 @@ const Sidebar = ({ isCollapsed }) => {
     { name: "Businesses", Icon: Building, path: "/businesses" },
     { name: "Reviews", Icon: Star, path: "/reviews" },
     { name: "Settings", Icon: Settings, path: "/setting" },
+    // { name: "Coupons", Icon: Settings, path: "/coupons" },
   ];
 
   const itemsSubItems = [
