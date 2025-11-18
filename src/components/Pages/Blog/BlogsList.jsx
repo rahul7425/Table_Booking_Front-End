@@ -157,13 +157,21 @@ const BlogsList = () => {
                       <Edit className="h-4 w-4" />
                     </Link> */}
 
-                    <Link
+                    {/* <Link
                       to={`/blog/comments/${blog._id}`}
                       className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                       title="View Comments"
                     >
                       <MessageCircle className="h-4 w-4" />
-                    </Link>
+                    </Link> */}
+
+<Link
+  to={`/blog/comments/${blog._id}`}
+  className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+  title="View Comments"
+>
+  <MessageCircle className="h-4 w-4" />
+</Link>
                   </div>
 
                   <button

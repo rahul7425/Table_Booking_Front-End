@@ -21,6 +21,18 @@ import Blog from './components/Pages/Blog/BlogsList';
 import CreateBlog from './components/Pages/Blog/CreateBlog';
 import BlogDetails from './components/Pages/Blog/BlogDetails';
 import BlogComments from './components/Pages/Blog/BlogComments';
+import ReviewsList from './components/Pages/Reviews/ReviewsList';
+import TopBusinesses from './components/Pages/Reviews/TopBusinesses';
+import BusinessReviews from './components/Pages/Reviews/BusinessReviews';
+import EditReview from './components/Pages/Reviews/EditReview';
+import BusinessList from './components/Pages/Business/BusinessList';
+import BusinessForm from './components/Pages/Business/BusinessForm';
+import BusinessDetails from './components/Pages/Business/BusinessDetails';
+import BranchManagement from './components/Pages/Business/BranchManagement';
+import ItemsMain from './components/Pages/Items/ItemsMain';
+import Tables from './components/Pages/Tables/Tables';
+import Schedules from './components/Pages/Schedules/Schedules';
+import SlotSets from './components/Pages/Slots/SlotSets';
 // import Coupons from './components/Pages/Coupon/CouponManagement';
 
 const Layout = () => {
@@ -32,12 +44,11 @@ const Layout = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      <div className={`h-full bg-white shadow-lg transition-all duration-300 ease-in-out ${
-        isSidebarCollapsed ? 'w-20' : 'w-64'
-      }`}>
+      <div className={`h-full bg-white shadow-lg transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'w-20' : 'w-64'
+        }`}>
         <Sidebar isCollapsed={isSidebarCollapsed} />
       </div>
-      
+
       <div className="flex-1 flex flex-col overflow-hidden bg-white shadow">
         <Header toggleSidebar={toggleSidebar} />
         <main className="flex-1 overflow-y-auto p-4 transition-all duration-300 ease-in-out bg-gray-50">
@@ -53,13 +64,13 @@ function App() {
 
   return (
     <Routes>
-      
-      <Route path="/" element={<PublicRoute><Login setUser={setUser}/></PublicRoute>} />
-      <Route path="/login" element={<PublicRoute><Login setUser={setUser}/></PublicRoute>} />
+
+      <Route path="/" element={<PublicRoute><Login setUser={setUser} /></PublicRoute>} />
+      <Route path="/login" element={<PublicRoute><Login setUser={setUser} /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><CreateAccount /></PublicRoute>} />
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard user={user}/>} />
+        <Route path="/dashboard" element={<Dashboard user={user} />} />
         <Route path="/users" element={<Users />} />
         {/* <Route path="/customer/:id" element={<CustomerOrderList />} /> */}
         <Route path="/catalog/categories" element={<Category />} />
@@ -74,7 +85,29 @@ function App() {
         <Route path="/blog/create" element={<CreateBlog />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/blog/edit/:id" element={<CreateBlog />} />
-        <Route path="/blog/:id/comments" element={<BlogComments />} />
+        {/* <Route path="/blog/:id/comments" element={<BlogComments />} /> */}
+                <Route path="/blog/comments/:blogId" element={<BlogComments />} />
+
+
+        <Route path="/reviews" element={<ReviewsList />} />
+        <Route path="/reviews/top-businesses" element={<TopBusinesses />} />
+        <Route path="/reviews/business/:id" element={<BusinessReviews />} />
+        <Route path="/reviews/edit/:id" element={<EditReview />} />
+
+
+        <Route path="/businesses" element={<BusinessList />} />
+        <Route path="/businesses/create" element={<BusinessForm />} />
+        <Route path="/businesses/edit/:id" element={<BusinessForm />} />
+        <Route path="/businesses/:id" element={<BusinessDetails />} />
+        <Route path="/businesses/:businessId/branches" element={<BranchManagement />} />
+
+
+
+        <Route path="/items/*" element={<ItemsMain />} />
+        <Route path="/tables" element={<Tables />} />
+        <Route path="/schedules" element={<Schedules />} />
+        <Route path="/slotsets" element={<SlotSets />} />
+
         {/* <Route path="/coupons" element={<Coupons />} /> */}
         
       </Route>

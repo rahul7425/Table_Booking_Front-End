@@ -147,7 +147,7 @@ const BlogDetails = () => {
                 <div className="text-center">
                     <p className="text-gray-500 text-lg">Blog not found.</p>
                     <Link
-                        to="/blogs"
+                        to="/blog"
                         className="inline-block mt-4 text-green-600 hover:text-green-700"
                     >
                         Back to Blogs
@@ -165,7 +165,7 @@ const BlogDetails = () => {
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
                         <Link
-                            to="/blogs"
+                            to="/blog"
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                         >
                             <ArrowLeft className="h-5 w-5" />
