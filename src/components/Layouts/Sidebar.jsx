@@ -13,6 +13,7 @@ import {
   Phone,
   FileText,
   Building,
+  Star,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed }) => {
@@ -36,11 +37,15 @@ const Sidebar = ({ isCollapsed }) => {
   const menuItems = [
     { name: "Dashboard", Icon: Home, path: "/dashboard" },
     { name: "Items", Icon: Package },
+    { name: "table", Icon: Package, path: "/tables" },
+    { name: "schedules", Icon: Package, path: "/schedules" },
+    { name: "slotsets", Icon: Package, path: "/slotsets" },
     { name: "Users", Icon: Users, path: "/users" },
     { name: "Bookings", Icon: ShoppingCart, path: "/bookings" },
     { name: "Contact", Icon: Phone, path: "/contact" },
     { name: "Blog", Icon: FileText, path: "/blog" },
     { name: "Businesses", Icon: Building, path: "/businesses" },
+    { name: "Reviews", Icon: Star, path: "/reviews" },
     { name: "Settings", Icon: Settings, path: "/setting" },
   ];
 
