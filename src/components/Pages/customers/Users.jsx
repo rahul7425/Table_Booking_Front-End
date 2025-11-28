@@ -140,13 +140,13 @@ export default function Users() {
                 Users
               </h1>
               <div className="flex gap-3 mb-6 mr-4">
-                <button
+                {/* <button
                   onClick={handleExport}
                   className="flex items-center gap-2 bg-transparent border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100"
                 >
                   <Download className="w-4 h-4" />
                   Export
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="mb-6">
@@ -222,7 +222,7 @@ export default function Users() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              user.role === 'admin' 
+                              user.role === 'admin'
                                 ? 'bg-purple-100 text-purple-800'
                                 : user.role === 'vendor'
                                 ? 'bg-orange-100 text-orange-800'
@@ -243,13 +243,13 @@ export default function Users() {
                                 <Eye className="w-4 h-4" />
                                 View
                               </button>
-                              <button
+                              {/* <button
                                 onClick={() => handleViewBookings(user._id)}
                                 className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors text-sm"
                               >
                                 <Calendar className="w-4 h-4" />
                                 Bookings
-                              </button>
+                              </button> */}
                             </div>
                           </td>
                         </tr>

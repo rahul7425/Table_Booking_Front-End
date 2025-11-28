@@ -198,7 +198,7 @@
 //                     <Users className="h-4 w-4 mr-2" />
 //                     <span>Seats: {table.seatingCapacity} people</span>
 //                   </div>
-                  
+
 //                   <div className="text-sm text-gray-600">
 //                     <span className="font-medium">Price:</span> ₹{table.price}
 //                   </div>
@@ -634,7 +634,7 @@ const Tables = () => {
         </div>
 
         {/* Tables Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
           {tables.map((table) => (
             <div key={table._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
@@ -642,11 +642,10 @@ const Tables = () => {
                   <h3 className="text-lg font-semibold text-gray-900">
                     Table {table.tableNumber}
                   </h3>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    table.category === 'Premium' 
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${table.category === 'Premium'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-gray-100 text-gray-800'
+                    }`}>
                     {table.category}
                   </span>
                 </div>
@@ -656,7 +655,7 @@ const Tables = () => {
                     <Users className="h-4 w-4 mr-2" />
                     <span>Seats: {table.seatingCapacity} people</span>
                   </div>
-                  
+
                   <div className="text-sm text-gray-600">
                     <span className="font-medium">Price:</span> ₹{table.price}
                   </div>
@@ -670,24 +669,22 @@ const Tables = () => {
                   {/* Business and Branch Info */}
                   <div className="flex items-center text-sm text-gray-500">
                     <Building className="h-4 w-4 mr-1" />
-                    <span className="truncate">{getBusinessName(table.businessId)}</span>
-                    <span className="mx-1">•</span>
+                    {/* <span className="truncate">{getBusinessName(table.businessId)}</span> */}
+                    {/* <span className="mx-1">•</span> */}
                     <span>{getBranchName(table.branchId)}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <span className={`inline-flex items-center ${
-                    table.isAvailable ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    <div className={`w-2 h-2 rounded-full mr-2 ${
-                      table.isAvailable ? 'bg-green-500' : 'bg-red-500'
-                    }`} />
+                  <span className={`inline-flex items-center ${table.isAvailable ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${table.isAvailable ? 'bg-green-500' : 'bg-red-500'
+                      }`} />
                     {table.isAvailable ? 'Available' : 'Occupied'}
                   </span>
                 </div>
 
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 ">
                   <button
                     onClick={() => handleEdit(table)}
                     className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"

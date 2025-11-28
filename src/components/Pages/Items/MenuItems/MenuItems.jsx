@@ -1,7 +1,8 @@
+
 // // components/Pages/Items/MenuItems/MenuItems.js
 // import React, { useState, useEffect } from 'react';
 // import axiosInstance from '../../../../config/AxiosInstance';
-// import { Plus, Edit, Trash2, Loader, Search, Filter, Tag } from 'lucide-react';
+// import { Plus, Edit, Trash2, Loader, Search, Filter, Tag, Building } from 'lucide-react';
 
 // const MenuItems = () => {
 //   const [items, setItems] = useState([]);
@@ -13,6 +14,7 @@
 //   const [branches, setBranches] = useState([]);
 //   const [searchTerm, setSearchTerm] = useState('');
 //   const [filterType, setFilterType] = useState('all');
+//   const [businessLoading, setBusinessLoading] = useState(false);
 
 //   const [formData, setFormData] = useState({
 //     name: '',
@@ -63,30 +65,32 @@
 //     }
 //   };
 
+//   // Fetch businesses from the new API
 //   const fetchBusinesses = async () => {
 //     try {
-//       const response = await axiosInstance.post('/business/get-all', {
-//         model: 'Business'
+//       setBusinessLoading(true);
+//       const response = await axiosInstance.post('/details/list', {
+//         page: 1,
+//         limit: 100
 //       });
 //       if (response.data.success) {
 //         setBusinesses(response.data.data);
 //       }
 //     } catch (error) {
 //       console.error('Error fetching businesses:', error);
+//       alert('Failed to fetch businesses');
+//     } finally {
+//       setBusinessLoading(false);
 //     }
 //   };
 
-//   const fetchBranches = async (businessId) => {
-//     try {
-//       const response = await axiosInstance.post('/business/get-all', {
-//         model: 'Branch',
-//         businessId
-//       });
-//       if (response.data.success) {
-//         setBranches(response.data.data);
-//       }
-//     } catch (error) {
-//       console.error('Error fetching branches:', error);
+//   // Extract branches from selected business
+//   const fetchBranches = (businessId) => {
+//     const selectedBusiness = businesses.find(business => business._id === businessId);
+//     if (selectedBusiness && selectedBusiness.branches) {
+//       setBranches(selectedBusiness.branches);
+//     } else {
+//       setBranches([]);
 //     }
 //   };
 
@@ -183,11 +187,31 @@
 //       isAvailable: true
 //     });
 //     setEditingItem(null);
+//     setBranches([]);
+//   };
+
+//   // Get business name by ID
+//   const getBusinessName = (businessId) => {
+//     const business = businesses.find(b => b._id === businessId);
+//     return business ? business.name : 'Unknown Business';
+//   };
+
+//   // Get branch name by ID
+//   const getBranchName = (branchId) => {
+//     if (!branchId) return 'All Branches';
+//     // Search through all businesses for the branch
+//     for (let business of businesses) {
+//       if (business.branches) {
+//         const branch = business.branches.find(b => b._id === branchId);
+//         if (branch) return branch.name;
+//       }
+//     }
+//     return 'Unknown Branch';
 //   };
 
 //   const filteredItems = items.filter(item => {
 //     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//                          item.category.toLowerCase().includes(searchTerm.toLowerCase());
+//       item.category.toLowerCase().includes(searchTerm.toLowerCase());
 //     const matchesFilter = filterType === 'all' || item.type === filterType;
 //     return matchesSearch && matchesFilter;
 //   });
@@ -261,11 +285,10 @@
 //                   <h3 className="text-lg font-semibold text-gray-900 truncate flex-1">
 //                     {item.name}
 //                   </h3>
-//                   <span className={`px-2 py-1 text-xs font-medium rounded-full ml-2 ${
-//                     item.type === 'food' 
+//                   <span className={`px-2 py-1 text-xs font-medium rounded-full ml-2 ${item.type === 'food'
 //                       ? 'bg-orange-100 text-orange-800'
 //                       : 'bg-blue-100 text-blue-800'
-//                   }`}>
+//                     }`}>
 //                     {item.type}
 //                   </span>
 //                 </div>
@@ -277,6 +300,14 @@
 //                     {item.subcategory && (
 //                       <span className="ml-2 text-gray-400">• {item.subcategory}</span>
 //                     )}
+//                   </div>
+
+//                   {/* Business and Branch Info */}
+//                   <div className="flex items-center text-sm text-gray-500">
+//                     <Building className="h-4 w-4 mr-1" />
+//                     <span className="truncate">{getBusinessName(item.businessId)}</span>
+//                     <span className="mx-1">•</span>
+//                     <span>{getBranchName(item.branchId)}</span>
 //                   </div>
 
 //                   {item.description && (
@@ -300,12 +331,10 @@
 //                 </div>
 
 //                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-//                   <span className={`inline-flex items-center ${
-//                     item.isAvailable ? 'text-green-600' : 'text-red-600'
-//                   }`}>
-//                     <div className={`w-2 h-2 rounded-full mr-2 ${
-//                       item.isAvailable ? 'bg-green-500' : 'bg-red-500'
-//                     }`} />
+//                   <span className={`inline-flex items-center ${item.isAvailable ? 'text-green-600' : 'text-red-600'
+//                     }`}>
+//                     <div className={`w-2 h-2 rounded-full mr-2 ${item.isAvailable ? 'bg-green-500' : 'bg-red-500'
+//                       }`} />
 //                     {item.isAvailable ? 'Available' : 'Unavailable'}
 //                   </span>
 //                 </div>
@@ -392,7 +421,7 @@
 //                     </div>
 //                   </div>
 
-//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                   {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                     <div>
 //                       <label className="block text-sm font-medium text-gray-700 mb-1">
 //                         Category *
@@ -425,7 +454,37 @@
 //                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
 //                       />
 //                     </div>
+//                   </div> */}
+
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Category *
+//                       </label>
+//                       <input
+//                         type="text"
+//                         required
+//                         value={formData.category}
+//                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+//                         placeholder="Enter category (e.g., Starters)"
+//                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                       />
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Subcategory
+//                       </label>
+//                       <input
+//                         type="text"
+//                         value={formData.subcategory}
+//                         onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+//                         placeholder="Enter subcategory (optional)"
+//                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                       />
+//                     </div>
 //                   </div>
+
 
 //                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                     <div>
@@ -442,11 +501,15 @@
 //                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
 //                       >
 //                         <option value="">Select Business</option>
-//                         {businesses.map(business => (
-//                           <option key={business._id} value={business._id}>
-//                             {business.businessName}
-//                           </option>
-//                         ))}
+//                         {businessLoading ? (
+//                           <option value="" disabled>Loading businesses...</option>
+//                         ) : (
+//                           businesses.map(business => (
+//                             <option key={business._id} value={business._id}>
+//                               {business.name}
+//                             </option>
+//                           ))
+//                         )}
 //                       </select>
 //                     </div>
 
@@ -462,7 +525,7 @@
 //                         <option value="">All Branches</option>
 //                         {branches.map(branch => (
 //                           <option key={branch._id} value={branch._id}>
-//                             {branch.branchName}
+//                             {branch.name}
 //                           </option>
 //                         ))}
 //                       </select>
@@ -563,7 +626,7 @@
 //   );
 // };
 
-// export default MenuItems;
+// export default MenuItems;/
 
 
 
@@ -571,7 +634,7 @@
 // components/Pages/Items/MenuItems/MenuItems.js
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../../config/AxiosInstance';
-import { Plus, Edit, Trash2, Loader, Search, Filter, Tag, Building } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader, Search, Filter, Tag, Building, MapPin } from 'lucide-react';
 
 const MenuItems = () => {
   const [items, setItems] = useState([]);
@@ -584,6 +647,7 @@ const MenuItems = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [businessLoading, setBusinessLoading] = useState(false);
+
 
   const [formData, setFormData] = useState({
     name: '',
@@ -634,7 +698,6 @@ const MenuItems = () => {
     }
   };
 
-  // Fetch businesses from the new API
   const fetchBusinesses = async () => {
     try {
       setBusinessLoading(true);
@@ -653,7 +716,6 @@ const MenuItems = () => {
     }
   };
 
-  // Extract branches from selected business
   const fetchBranches = (businessId) => {
     const selectedBusiness = businesses.find(business => business._id === businessId);
     if (selectedBusiness && selectedBusiness.branches) {
@@ -697,14 +759,14 @@ const MenuItems = () => {
       category: item.category,
       subcategory: item.subcategory || '',
       description: item.description || '',
-      businessId: item.businessId,
-      branchId: item.branchId || '',
+      businessId: item.businessId?._id || item.businessId || '',
+      branchId: item.branchId?._id || item.branchId || '',
       variants: item.variants.length > 0 ? item.variants : [{ name: 'Regular', price: 0, isAvailable: true }],
       complimentary: item.complimentary || [],
       isAvailable: item.isAvailable
     });
-    if (item.businessId) {
-      fetchBranches(item.businessId);
+    if (item.businessId?._id || item.businessId) {
+      fetchBranches(item.businessId._id || item.businessId);
     }
     setShowModal(true);
   };
@@ -759,16 +821,30 @@ const MenuItems = () => {
     setBranches([]);
   };
 
-  // Get business name by ID
+  // Get business name by ID - Fixed to handle different data structures
   const getBusinessName = (businessId) => {
+    if (!businessId) return 'Unknown Business';
+
+    // If businessId is an object (populated)
+    if (typeof businessId === 'object' && businessId !== null) {
+      return businessId.name || 'Unknown Business';
+    }
+
+    // If businessId is a string ID
     const business = businesses.find(b => b._id === businessId);
     return business ? business.name : 'Unknown Business';
   };
 
-  // Get branch name by ID
+  // Get branch name by ID - Fixed to handle different data structures
   const getBranchName = (branchId) => {
     if (!branchId) return 'All Branches';
-    // Search through all businesses for the branch
+
+    // If branchId is an object (populated)
+    if (typeof branchId === 'object' && branchId !== null) {
+      return branchId.name || 'Unknown Branch';
+    }
+
+    // If branchId is a string ID 
     for (let business of businesses) {
       if (business.branches) {
         const branch = business.branches.find(b => b._id === branchId);
@@ -778,9 +854,17 @@ const MenuItems = () => {
     return 'Unknown Branch';
   };
 
+  // Get category and subcategory display - Fixed to match your image
+  const getCategoryDisplay = (item) => {
+    if (item.category && item.subcategory) {
+      return `${item.category} • ${item.subcategory}`;
+    }
+    return item.category || 'Uncategorized';
+  };
+
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase());
+      (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesFilter = filterType === 'all' || item.type === filterType;
     return matchesSearch && matchesFilter;
   });
@@ -855,8 +939,8 @@ const MenuItems = () => {
                     {item.name}
                   </h3>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ml-2 ${item.type === 'food'
-                      ? 'bg-orange-100 text-orange-800'
-                      : 'bg-blue-100 text-blue-800'
+                    ? 'bg-orange-100 text-orange-800'
+                    : 'bg-blue-100 text-blue-800'
                     }`}>
                     {item.type}
                   </span>
@@ -865,19 +949,26 @@ const MenuItems = () => {
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center text-sm text-gray-600">
                     <Tag className="h-4 w-4 mr-1" />
-                    <span>{item.category}</span>
-                    {item.subcategory && (
-                      <span className="ml-2 text-gray-400">• {item.subcategory}</span>
-                    )}
+                    <span>{getCategoryDisplay(item)}</span>
                   </div>
 
                   {/* Business and Branch Info */}
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Building className="h-4 w-4 mr-1" />
-                    <span className="truncate">{getBusinessName(item.businessId)}</span>
-                    <span className="mx-1">•</span>
-                    <span>{getBranchName(item.branchId)}</span>
+                  <div className="flex flex-col text-sm text-gray-500">
+
+                    {/* Business Line */}
+                    <div className="flex items-center">
+                      <Building className="h-4 w-4 mr-1" />
+                      <span className="truncate">{getBusinessName(item.businessId)}</span>
+                    </div>
+
+                    {/* Branch Line */}
+                    <div className="flex items-center mt-1">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{getBranchName(item.branchId)}</span>
+                    </div>
+
                   </div>
+
 
                   {item.description && (
                     <p className="text-sm text-gray-600 line-clamp-2">
@@ -939,7 +1030,7 @@ const MenuItems = () => {
           </div>
         )}
 
-        {/* Create/Edit Modal */}
+        {/* Create/Edit Modal - Keep this part exactly as you had it */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -990,41 +1081,6 @@ const MenuItems = () => {
                     </div>
                   </div>
 
-                  {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Category *
-                      </label>
-                      <select
-                        required
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      >
-                        <option value="">Select Category</option>
-                        {categories
-                          .filter(cat => cat.type === (formData.type === 'food' ? 'Food' : 'Drinks'))
-                          .map(category => (
-                            <option key={category._id} value={category.name}>
-                              {category.name}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Subcategory
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.subcategory}
-                        onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div> */}
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1053,7 +1109,6 @@ const MenuItems = () => {
                       />
                     </div>
                   </div>
-
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

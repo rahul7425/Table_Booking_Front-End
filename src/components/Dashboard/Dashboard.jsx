@@ -29,6 +29,9 @@ const pieData = [
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
+const savedUser = JSON.parse(localStorage.getItem("user"));
+
+
 export default function Dashboard({ user }) {
   const [data, setData] = useState({});
   const [recentData, setRecentData] = useState([]);
@@ -39,11 +42,12 @@ export default function Dashboard({ user }) {
     revenue: { totalVendorRevenue: 0, totalAdminRevenue: 0, totalRevenue: 0 }
   });
 
-  useEffect(() => {
-    if (user) {
-      toast.success(`Welcome ${user}!`);
-    }
-  }, [user]);
+ useEffect(() => {
+  if (savedUser) {
+    toast.success(`Welcome ${savedUser.firstName} ${savedUser.lastName}!`);
+  }
+}, []);
+
 
   useEffect(() => {
     const fetchDashboardData = async () => {

@@ -33,7 +33,11 @@ import ItemsMain from './components/Pages/Items/ItemsMain';
 import Tables from './components/Pages/Tables/Tables';
 import Schedules from './components/Pages/Schedules/Schedules';
 import SlotSets from './components/Pages/Slots/SlotSets';
-// import Coupons from './components/Pages/Coupon/CouponManagement';
+import BookingsMain from './components/Pages/Bookings/BookingsList';
+import BookingsList from './components/Pages/Bookings/BookingsList';
+import ReferralMain from './components/Pages/Referral/ReferralMain';
+
+
 
 const Layout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -77,7 +81,6 @@ function App() {
         <Route path="/catalog/categories/:id" element={<ViewCategory />} />
         <Route path="/catalog/attributes" element={<Attribute />} />
         <Route path="/catalog/attributes/:id" element={<AttributesValues />} />
-        <Route path="/catalog/coupons" element={<Coupon />} />
         <Route path="/setting" element={<SettingsPage />} />
         <Route path="/edit-profile" element={<ProfileForm />} />
         <Route path="/contact" element={<ContactList />} />
@@ -86,7 +89,7 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/blog/edit/:id" element={<CreateBlog />} />
         {/* <Route path="/blog/:id/comments" element={<BlogComments />} /> */}
-                <Route path="/blog/comments/:blogId" element={<BlogComments />} />
+        <Route path="/blog/comments/:blogId" element={<BlogComments />} />
 
 
         <Route path="/reviews" element={<ReviewsList />} />
@@ -108,8 +111,15 @@ function App() {
         <Route path="/schedules" element={<Schedules />} />
         <Route path="/slotsets" element={<SlotSets />} />
 
-        {/* <Route path="/coupons" element={<Coupons />} /> */}
-        
+
+        <Route path="/bookings" element={<BookingsList />} />
+
+
+        <Route path="/coupons" element={<Coupon />} />
+
+
+        <Route path="/referral/*" element={<ReferralMain />} />
+
       </Route>
     </Routes>
   );

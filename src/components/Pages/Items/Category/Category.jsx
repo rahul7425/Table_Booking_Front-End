@@ -647,7 +647,7 @@ const Category = () => {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
           {filteredCategories.map((category) => (
             <div key={category._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
@@ -676,9 +676,9 @@ const Category = () => {
                     <Building className="h-4 w-4 mr-2" />
                     <span className="truncate">{getBusinessName(category.businessId)}</span>
                   </div>
-                  <div className="text-sm text-gray-500 ml-6">
+                  {/* <div className="text-sm text-gray-500 ml-6">
                     {getBranchName(category.branchId)}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">

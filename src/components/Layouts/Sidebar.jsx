@@ -14,6 +14,7 @@ import {
   FileText,
   Building,
   Star,
+  Award,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed }) => {
@@ -42,6 +43,9 @@ const Sidebar = ({ isCollapsed }) => {
     { name: "slotsets", Icon: Package, path: "/slotsets" },
     { name: "Users", Icon: Users, path: "/users" },
     { name: "Bookings", Icon: ShoppingCart, path: "/bookings" },
+    { name: "Coupons", Icon: ShoppingCart, path: "/coupons" },
+    { name: "Referral", Icon: Award, path: "/referral" },
+
     { name: "Contact", Icon: Phone, path: "/contact" },
     { name: "Blog", Icon: FileText, path: "/blog" },
     { name: "Businesses", Icon: Building, path: "/businesses" },
@@ -60,6 +64,7 @@ const Sidebar = ({ isCollapsed }) => {
       <div className="p-6 text-green-600 text-2xl font-bold whitespace-nowrap overflow-hidden transition-all duration-300">
         {isCollapsed ? 'A' : 'Admin'}
       </div>
+
 
       <nav className="flex-1 space-y-2 px-4 overflow-y-auto overflow-x-hidden">
         {menuItems.map(({ name, Icon, path }) => (
