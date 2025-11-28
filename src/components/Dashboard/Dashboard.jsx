@@ -88,7 +88,7 @@ export default function Dashboard({ user }) {
           <h1 className="text-2xl font-semibold text-gray-900 mb-6">Dashboard Overview</h1>
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-6 w-full">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-6 w-full">
             {cardsData.map((card, index) => (
               <div key={index} className={`${card.bgColor} text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300`}>
                 <div className="flex justify-center mb-4">
@@ -107,7 +107,7 @@ export default function Dashboard({ user }) {
                 )}
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Summary Cards - Updated with totals from API */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-6 w-full">
