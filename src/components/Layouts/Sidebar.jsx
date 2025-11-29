@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Home,
@@ -18,6 +18,20 @@ import {
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed }) => {
+  const [userRole, setUserRole] = useState(null);
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem('user');
+      if (storedData) {
+        const userData = JSON.parse(storedData);
+        if (userData && userData.role) {
+          setUserRole(userData.role);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user data from local storage:", error);
+    }
+  }, []);
   const location = useLocation();
   const [isItemsOpen, setItemsOpen] = useState(false);
 
@@ -36,29 +50,32 @@ const Sidebar = ({ isCollapsed }) => {
   };
 
   const menuItems = [
-    { name: "Dashboard", Icon: Home, path: "/dashboard" },
-    { name: "Items", Icon: Package },
-    { name: "table", Icon: Package, path: "/tables" },
-    { name: "schedules", Icon: Package, path: "/schedules" },
-    { name: "slotsets", Icon: Package, path: "/slotsets" },
-    { name: "Users", Icon: Users, path: "/users" },
-    { name: "Bookings", Icon: ShoppingCart, path: "/bookings" },
-    { name: "Coupons", Icon: ShoppingCart, path: "/coupons" },
-    { name: "Referral", Icon: Award, path: "/referral" },
+    { name: "Dashboard", Icon: Home, path: "/dashboard",roles: [ 'admin', 'vendor'] },
+    { name: "Items", Icon: Package ,roles: [ 'admin', 'vendor']},
+    { name: "table", Icon: Package, path: "/tables" ,roles: [ 'admin', 'vendor']},
+    { name: "schedules", Icon: Package, path: "/schedules" ,roles: [ 'admin', 'vendor']},
+    { name: "slotsets", Icon: Package, path: "/slotsets" ,roles: [ 'admin', 'vendor']},
+    { name: "Users", Icon: Users, path: "/users" ,roles: [ 'admin']},
+    { name: "Bookings", Icon: ShoppingCart, path: "/bookings" ,roles: [ 'admin', 'vendor']},
+    { name: "Coupons", Icon: ShoppingCart, path: "/coupons" ,roles: [ 'admin']},
+    { name: "Referral", Icon: Award, path: "/referral" ,roles: [ 'admin']},
 
-    { name: "Contact", Icon: Phone, path: "/contact" },
-    { name: "Blog", Icon: FileText, path: "/blog" },
-    { name: "Businesses", Icon: Building, path: "/businesses" },
-    { name: "Reviews", Icon: Star, path: "/reviews" },
-    { name: "Settings", Icon: Settings, path: "/setting" },
-    // { name: "Coupons", Icon: Settings, path: "/coupons" },
+    { name: "Contact", Icon: Phone, path: "/contact" ,roles: [ 'admin']},
+    { name: "Blog", Icon: FileText, path: "/blog" ,roles: [ 'admin']},
+    { name: "Businesses", Icon: Building, path: "/businesses" ,roles: [ 'admin', 'vendor']},
+    { name: "Reviews", Icon: Star, path: "/reviews" ,roles: [ 'admin']},
+    { name: "Settings", Icon: Settings, path: "/setting" ,roles: [ 'admin']},
+    // { name: "Coupons", Icon: Settings, path: "/coupons" ,roles: [ 'admin', 'vendor']},
   ];
 
   const itemsSubItems = [
     { name: "Categories", path: "/items/categories" },
     { name: "Menu Items", path: "/items/menu-items" },
   ];
-
+  console.log("User Role in Sidebar:", userRole);
+const visibleMenuItems = menuItems.filter(item => 
+    !item.roles || item.roles.includes(userRole)
+  );
   return (
     <div className="h-full flex flex-col">
       <div className="p-6 text-green-600 text-2xl font-bold whitespace-nowrap overflow-hidden transition-all duration-300">
@@ -67,7 +84,7 @@ const Sidebar = ({ isCollapsed }) => {
 
 
       <nav className="flex-1 space-y-2 px-4 overflow-y-auto overflow-x-hidden">
-        {menuItems.map(({ name, Icon, path }) => (
+        {visibleMenuItems.map(({ name, Icon, path }) => (
           <div key={name}>
             {name === "Items" ? (
               <>

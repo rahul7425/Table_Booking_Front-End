@@ -1,6 +1,7 @@
 import { Route, Routes, Outlet } from 'react-router-dom';
 import { useState } from 'react';
 import ProtectedRoute from './components/ProtectedRoute';
+import PermissionRoute from './components/PermissionRoute';
 import PublicRoute from './components/PublicRoute';
 import Login from './components/Pages/Login';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -75,15 +76,21 @@ function App() {
       <Route path="/signup" element={<PublicRoute><CreateAccount /></PublicRoute>} />
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard user={user} />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/users" element={<PermissionRoute allowedRoles={['admin']}>
+                <Users />
+            </PermissionRoute>} />
         {/* <Route path="/customer/:id" element={<CustomerOrderList />} /> */}
         <Route path="/catalog/categories" element={<Category />} />
         <Route path="/catalog/categories/:id" element={<ViewCategory />} />
         <Route path="/catalog/attributes" element={<Attribute />} />
         <Route path="/catalog/attributes/:id" element={<AttributesValues />} />
-        <Route path="/setting" element={<SettingsPage />} />
+        <Route path="/setting" element={<PermissionRoute allowedRoles={['admin']}>
+                <SettingsPage />
+            </PermissionRoute>} />
         <Route path="/edit-profile" element={<ProfileForm />} />
-        <Route path="/contact" element={<ContactList />} />
+        <Route path="/contact" element={<PermissionRoute allowedRoles={['admin']}>
+                <ContactList />
+            </PermissionRoute>} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/create" element={<CreateBlog />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
@@ -92,7 +99,9 @@ function App() {
         <Route path="/blog/comments/:blogId" element={<BlogComments />} />
 
 
-        <Route path="/reviews" element={<ReviewsList />} />
+        <Route path="/reviews" element={<PermissionRoute allowedRoles={['admin']}>
+                <ReviewsList />
+            </PermissionRoute>} />
         <Route path="/reviews/top-businesses" element={<TopBusinesses />} />
         <Route path="/reviews/business/:id" element={<BusinessReviews />} />
         <Route path="/reviews/edit/:id" element={<EditReview />} />
@@ -115,10 +124,14 @@ function App() {
         <Route path="/bookings" element={<BookingsList />} />
 
 
-        <Route path="/coupons" element={<Coupon />} />
+        <Route path="/coupons" element={<PermissionRoute allowedRoles={['admin']}>
+                <Coupon />
+            </PermissionRoute>} />
 
 
-        <Route path="/referral/*" element={<ReferralMain />} />
+        <Route path="/referral/*" element={<PermissionRoute allowedRoles={['admin']}>
+                <ReferralMain />
+            </PermissionRoute>} />
 
       </Route>
     </Routes>
