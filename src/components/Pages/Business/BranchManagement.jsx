@@ -1,3 +1,4 @@
+
 // import React, { useState, useEffect } from 'react';
 // import { useParams, Link } from 'react-router-dom';
 // import axiosInstance from '../../../config/AxiosInstance';
@@ -19,7 +20,6 @@
 //   const [loading, setLoading] = useState(true);
 //   const [showAddForm, setShowAddForm] = useState(false);
 //   const [formData, setFormData] = useState({
-//     name: '',
 //     description: '',
 //     address: { street: '', city: '', state: '' }
 //   });
@@ -71,12 +71,12 @@
 
 //   const addBranch = async (e) => {
 //     e.preventDefault();
-    
+
 //     try {
 //       const submitData = new FormData();
 //       submitData.append('description', formData.description);
 //       submitData.append('address', JSON.stringify(formData.address));
-      
+
 //       // Append images
 //       branchImages.forEach(image => {
 //         submitData.append('images', image);
@@ -91,7 +91,7 @@
 //       if (response.data.success) {
 //         alert('Branch added successfully');
 //         setShowAddForm(false);
-//         setFormData({ name: '', description: '', address: { street: '', city: '', state: '' } });
+//         setFormData({ description: '', address: { street: '', city: '', state: '' } });
 //         setBranchImages([]);
 //         fetchBusinessDetails(); // Refresh branches list
 //       }
@@ -159,7 +159,15 @@
 //         {/* Add Branch Form */}
 //         {showAddForm && (
 //           <div className="bg-white rounded-lg shadow p-6 mb-6">
-//             <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Branch</h3>
+//             <div className="flex justify-between items-center mb-4">
+//               <h3 className="text-lg font-medium text-gray-900">Add New Branch</h3>
+//               <button
+//                 onClick={() => setShowAddForm(false)}
+//                 className="text-gray-400 hover:text-gray-600"
+//               >
+//                 <X className="h-5 w-5" />
+//               </button>
+//             </div>
 //             <form onSubmit={addBranch} className="space-y-4">
 //               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //                 <div className="md:col-span-2">
@@ -185,6 +193,7 @@
 //                     value={formData.address.street}
 //                     onChange={handleAddressChange}
 //                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                     placeholder="Street address"
 //                   />
 //                 </div>
 //                 <div>
@@ -197,6 +206,7 @@
 //                     value={formData.address.city}
 //                     onChange={handleAddressChange}
 //                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                     placeholder="City"
 //                   />
 //                 </div>
 //                 <div>
@@ -209,6 +219,7 @@
 //                     value={formData.address.state}
 //                     onChange={handleAddressChange}
 //                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                     placeholder="State"
 //                   />
 //                 </div>
 //                 <div className="md:col-span-2">
@@ -249,7 +260,7 @@
 //             <h3 className="text-lg font-medium text-gray-900 mb-4">
 //               Branches ({branches.length})
 //             </h3>
-            
+
 //             {branches.length === 0 ? (
 //               <div className="text-center py-8">
 //                 <MapPin className="mx-auto h-12 w-12 text-gray-400" />
@@ -257,6 +268,13 @@
 //                 <p className="mt-1 text-sm text-gray-500">
 //                   Get started by adding your first branch.
 //                 </p>
+//                 <button
+//                   onClick={() => setShowAddForm(true)}
+//                   className="mt-4 flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+//                 >
+//                   <Plus className="h-4 w-4" />
+//                   <span>Add First Branch</span>
+//                 </button>
 //               </div>
 //             ) : (
 //               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -266,7 +284,7 @@
 //                       <h4 className="font-medium text-gray-900">
 //                         {branch.name || business?.name}
 //                       </h4>
-//                       <div className="flex space-x-2">
+//                       {/* <div className="flex space-x-2">
 //                         <button className="text-blue-600 hover:text-blue-700">
 //                           <Edit className="h-4 w-4" />
 //                         </button>
@@ -276,18 +294,18 @@
 //                         >
 //                           <Trash2 className="h-4 w-4" />
 //                         </button>
-//                       </div>
+//                       </div> */}
 //                     </div>
-                    
+
 //                     <p className="text-gray-600 text-sm mb-3">{branch.description}</p>
-                    
+
 //                     <div className="flex items-center text-gray-500 text-sm mb-3">
 //                       <MapPin className="h-4 w-4 mr-1" />
 //                       <span>
 //                         {branch.address.street}, {branch.address.city}, {branch.address.state}
 //                       </span>
 //                     </div>
-                    
+
 //                     <div className="flex justify-between items-center text-sm">
 //                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
 //                         branch.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -313,13 +331,15 @@
 
 
 
+
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axiosInstance from '../../../config/AxiosInstance';
-import { 
-  ArrowLeft, 
-  Loader, 
-  Plus, 
+import {
+  ArrowLeft,
+  Loader,
+  Plus,
   X,
   Upload,
   MapPin,
@@ -333,9 +353,10 @@ const BranchManagement = () => {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingBranch, setEditingBranch] = useState(null);
   const [formData, setFormData] = useState({
     description: '',
-    address: { street: '', city: '', state: '' }
+    address: { plotNo: '', street: '', city: '', state: '', pincode: '' }
   });
   const [branchImages, setBranchImages] = useState([]);
 
@@ -385,12 +406,12 @@ const BranchManagement = () => {
 
   const addBranch = async (e) => {
     e.preventDefault();
-    
+
     try {
       const submitData = new FormData();
       submitData.append('description', formData.description);
       submitData.append('address', JSON.stringify(formData.address));
-      
+
       // Append images
       branchImages.forEach(image => {
         submitData.append('images', image);
@@ -405,7 +426,7 @@ const BranchManagement = () => {
       if (response.data.success) {
         alert('Branch added successfully');
         setShowAddForm(false);
-        setFormData({ description: '', address: { street: '', city: '', state: '' } });
+        setFormData({ description: '', address: { plotNo: '', street: '', city: '', state: '', pincode: '' } });
         setBranchImages([]);
         fetchBusinessDetails(); // Refresh branches list
       }
@@ -413,6 +434,56 @@ const BranchManagement = () => {
       console.error('Error adding branch:', error);
       alert('Failed to add branch');
     }
+  };
+
+  const updateBranch = async (e) => {
+    e.preventDefault();
+
+    try {
+      const updateData = {
+        plotNo: formData.address.plotNo,
+        street: formData.address.street,
+        city: formData.address.city,
+        state: formData.address.state,
+        pincode: formData.address.pincode
+      };
+
+      const response = await axiosInstance.put(
+        `/details/${businessId}/branches/${editingBranch._id}`,
+        updateData
+      );
+
+      if (response.data.success) {
+        alert('Branch updated successfully');
+        setEditingBranch(null);
+        setFormData({ description: '', address: { plotNo: '', street: '', city: '', state: '', pincode: '' } });
+        setBranchImages([]);
+        fetchBusinessDetails(); // Refresh branches list
+      }
+    } catch (error) {
+      console.error('Error updating branch:', error);
+      alert('Failed to update branch');
+    }
+  };
+
+  const startEditing = (branch) => {
+    setEditingBranch(branch);
+    setFormData({
+      description: branch.description || '',
+      address: {
+        plotNo: branch.address?.plotNo || '',
+        street: branch.address?.street || '',
+        city: branch.address?.city || '',
+        state: branch.address?.state || '',
+        pincode: branch.address?.pincode || ''
+      }
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingBranch(null);
+    setFormData({ description: '', address: { plotNo: '', street: '', city: '', state: '', pincode: '' } });
+    setBranchImages([]);
   };
 
   const deleteBranch = async (branchId) => {
@@ -470,19 +541,21 @@ const BranchManagement = () => {
           </div>
         </div>
 
-        {/* Add Branch Form */}
-        {showAddForm && (
+        {/* Add/Edit Branch Form */}
+        {(showAddForm || editingBranch) && (
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Add New Branch</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                {editingBranch ? 'Edit Branch' : 'Add New Branch'}
+              </h3>
               <button
-                onClick={() => setShowAddForm(false)}
+                onClick={editingBranch ? cancelEditing : () => setShowAddForm(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={addBranch} className="space-y-4">
+            <form onSubmit={editingBranch ? updateBranch : addBranch} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -495,6 +568,19 @@ const BranchManagement = () => {
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Branch description..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Plot No
+                  </label>
+                  <input
+                    type="text"
+                    name="plotNo"
+                    value={formData.address.plotNo}
+                    onChange={handleAddressChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Plot number"
                   />
                 </div>
                 <div>
@@ -536,23 +622,38 @@ const BranchManagement = () => {
                     placeholder="State"
                   />
                 </div>
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Branch Images
+                    Pincode
                   </label>
                   <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageChange}
+                    type="text"
+                    name="pincode"
+                    value={formData.address.pincode}
+                    onChange={handleAddressChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Pincode"
                   />
                 </div>
+                {!editingBranch && (
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Branch Images
+                    </label>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setShowAddForm(false)}
+                  onClick={editingBranch ? cancelEditing : () => setShowAddForm(false)}
                   className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Cancel
@@ -561,7 +662,7 @@ const BranchManagement = () => {
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
-                  Add Branch
+                  {editingBranch ? 'Update Branch' : 'Add Branch'}
                 </button>
               </div>
             </form>
@@ -574,7 +675,7 @@ const BranchManagement = () => {
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               Branches ({branches.length})
             </h3>
-            
+
             {branches.length === 0 ? (
               <div className="text-center py-8">
                 <MapPin className="mx-auto h-12 w-12 text-gray-400" />
@@ -598,36 +699,43 @@ const BranchManagement = () => {
                       <h4 className="font-medium text-gray-900">
                         {branch.name || business?.name}
                       </h4>
-                      {/* <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-700">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => startEditing(branch)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button 
+                        {/* <button 
                           onClick={() => deleteBranch(branch._id)}
                           className="text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div> */}
+                        </button> */}
+                      </div>
                     </div>
-                    
+
                     <p className="text-gray-600 text-sm mb-3">{branch.description}</p>
-                    
-                    <div className="flex items-center text-gray-500 text-sm mb-3">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span>
-                        {branch.address.street}, {branch.address.city}, {branch.address.state}
-                      </span>
+
+                    <div className="space-y-1 text-sm text-gray-600 mb-3">
+                      {branch.address?.plotNo && (
+                        <div>Plot No: {branch.address.plotNo}</div>
+                      )}
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span>
+                          {branch.address.street}, {branch.address.city}, {branch.address.state} - {branch.address.pincode}
+                        </span>
+                      </div>
                     </div>
-                    
+
                     <div className="flex justify-between items-center text-sm">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        branch.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${branch.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
                         {branch.isActive ? 'Active' : 'Inactive'}
                       </span>
                       <span className="text-gray-500">
-                        {new Date(branch.createdAt).toLocaleDateString()}
+                        {new Date(branch.updatedAt).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
