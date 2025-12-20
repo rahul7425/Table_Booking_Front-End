@@ -52,7 +52,7 @@ const Sidebar = ({ isCollapsed }) => {
   const menuItems = [
     { name: "Dashboard", Icon: Home, path: "/dashboard",roles: [ 'admin', 'vendor'] },
     { name: "Items", Icon: Package ,roles: [ 'admin', 'vendor']},
-    { name: "table", Icon: Package, path: "/tables" ,roles: [ 'admin', 'vendor']},
+    // { name: "table", Icon: Package, path: "/tables" ,roles: [ 'admin', 'vendor']},
     { name: "schedules", Icon: Package, path: "/schedules" ,roles: [ 'admin', 'vendor']},
     { name: "slotsets", Icon: Package, path: "/slotsets" ,roles: [ 'admin', 'vendor']},
     { name: "Users", Icon: Users, path: "/users" ,roles: [ 'admin']},
@@ -70,7 +70,7 @@ const Sidebar = ({ isCollapsed }) => {
 
   const itemsSubItems = [
     { name: "Categories", path: "/items/categories" },
-    { name: "Menu Items", path: "/items/menu-items" },
+    // { name: "Menu Items", path: "/items/menu-items" },
   ];
   console.log("User Role in Sidebar:", userRole);
 const visibleMenuItems = menuItems.filter(item => 

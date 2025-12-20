@@ -5,11 +5,9 @@
 // import { 
 //   ArrowLeft, 
 //   Loader, 
-//   Plus, 
-//   X,
 //   Upload,
 //   MapPin,
-//   Trash2
+//   X
 // } from 'lucide-react';
 
 // const BusinessForm = () => {
@@ -35,7 +33,6 @@
 //   });
 //   const [images, setImages] = useState([]);
 //   const [imagePreviews, setImagePreviews] = useState([]);
-//   const [branches, setBranches] = useState([]);
 
 //   useEffect(() => {
 //     if (isEdit) {
@@ -58,7 +55,6 @@
 //           categoryType: business.categoryType
 //         });
 //         setImagePreviews(business.images || []);
-//         setBranches(business.branches || []);
 //       }
 //     } catch (error) {
 //       console.error('Error fetching business:', error);
@@ -101,34 +97,6 @@
 //     setImagePreviews(prev => prev.filter((_, i) => i !== index));
 //   };
 
-//   const addBranch = () => {
-//     setBranches(prev => [...prev, {
-//       name: '',
-//       description: '',
-//       address: { street: '', city: '', state: '' },
-//       images: []
-//     }]);
-//   };
-
-//   const updateBranch = (index, field, value) => {
-//     setBranches(prev => prev.map((branch, i) => 
-//       i === index ? { ...branch, [field]: value } : branch
-//     ));
-//   };
-
-//   const updateBranchAddress = (index, field, value) => {
-//     setBranches(prev => prev.map((branch, i) => 
-//       i === index ? { 
-//         ...branch, 
-//         address: { ...branch.address, [field]: value } 
-//       } : branch
-//     ));
-//   };
-
-//   const removeBranch = (index) => {
-//     setBranches(prev => prev.filter((_, i) => i !== index));
-//   };
-
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
     
@@ -147,11 +115,6 @@
 //       images.forEach(image => {
 //         submitData.append('images', image);
 //       });
-
-//       // Append branches if creating new business
-//       if (!isEdit && branches.length > 0) {
-//         submitData.append('branches', JSON.stringify(branches));
-//       }
 
 //       let response;
 //       if (isEdit) {
@@ -360,109 +323,6 @@
 //               </div>
 //             </div>
 
-//             {/* Branches Section - Only for new business creation */}
-//             {!isEdit && (
-//               <div>
-//                 <div className="flex justify-between items-center mb-4">
-//                   <h3 className="text-lg font-medium text-gray-900">Branches</h3>
-//                   <button
-//                     type="button"
-//                     onClick={addBranch}
-//                     className="flex items-center space-x-2 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-//                   >
-//                     <Plus className="h-4 w-4" />
-//                     <span>Add Branch</span>
-//                   </button>
-//                 </div>
-
-//                 {branches.length === 0 ? (
-//                   <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-lg">
-//                     <p className="text-gray-500">No branches added yet</p>
-//                     <p className="text-sm text-gray-400 mt-1">
-//                       You can add branches after creating the business
-//                     </p>
-//                   </div>
-//                 ) : (
-//                   <div className="space-y-4">
-//                     {branches.map((branch, index) => (
-//                       <div key={index} className="border border-gray-200 rounded-lg p-4">
-//                         <div className="flex justify-between items-center mb-4">
-//                           <h4 className="font-medium text-gray-900">Branch {index + 1}</h4>
-//                           <button
-//                             type="button"
-//                             onClick={() => removeBranch(index)}
-//                             className="text-red-600 hover:text-red-700"
-//                           >
-//                             <Trash2 className="h-4 w-4" />
-//                           </button>
-//                         </div>
-                        
-//                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
-//                               Branch Name
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={branch.name}
-//                               onChange={(e) => updateBranch(index, 'name', e.target.value)}
-//                               placeholder="Optional - defaults to business name"
-//                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                             />
-//                           </div>
-//                           <div className="md:col-span-2">
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
-//                               Description
-//                             </label>
-//                             <textarea
-//                               value={branch.description}
-//                               onChange={(e) => updateBranch(index, 'description', e.target.value)}
-//                               rows={2}
-//                               placeholder="Optional branch description"
-//                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                             />
-//                           </div>
-//                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
-//                               Street
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={branch.address.street}
-//                               onChange={(e) => updateBranchAddress(index, 'street', e.target.value)}
-//                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                             />
-//                           </div>
-//                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
-//                               City
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={branch.address.city}
-//                               onChange={(e) => updateBranchAddress(index, 'city', e.target.value)}
-//                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                             />
-//                           </div>
-//                           <div>
-//                             <label className="block text-sm font-medium text-gray-700 mb-2">
-//                               State
-//                             </label>
-//                             <input
-//                               type="text"
-//                               value={branch.address.state}
-//                               onChange={(e) => updateBranchAddress(index, 'state', e.target.value)}
-//                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                             />
-//                           </div>
-//                         </div>
-//                       </div>
-//                     ))}
-//                   </div>
-//                 )}
-//               </div>
-//             )}
-
 //             {/* Images */}
 //             <div>
 //               <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
@@ -557,7 +417,6 @@
 
 
 
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../../config/AxiosInstance';
@@ -566,7 +425,9 @@ import {
   Loader, 
   Upload,
   MapPin,
-  X
+  X,
+  Building,
+  Tag
 } from 'lucide-react';
 
 const BusinessForm = () => {
@@ -588,7 +449,8 @@ const BusinessForm = () => {
     },
     isActive: true,
     requestStatus: 'pending',
-    categoryType: 'both'
+    categoryType: 'Both',
+    foodType: 'Veg'
   });
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -607,13 +469,21 @@ const BusinessForm = () => {
         const business = response.data.data;
         setFormData({
           name: business.name,
-          description: business.description,
-          address: business.address,
+          description: business.description || '',
+          address: business.address || {
+            plotNo: '',
+            street: '',
+            area: '',
+            city: '',
+            state: '',
+            pincode: ''
+          },
           isActive: business.isActive,
           requestStatus: business.requestStatus,
-          categoryType: business.categoryType
+          categoryType: business.categoryType || 'Both',
+          foodType: business.foodType || 'Veg'
         });
-        setImagePreviews(business.images || []);
+        setImagePreviews(business.fullImageUrls || business.images || []);
       }
     } catch (error) {
       console.error('Error fetching business:', error);
@@ -669,6 +539,7 @@ const BusinessForm = () => {
       submitData.append('isActive', formData.isActive);
       submitData.append('requestStatus', formData.requestStatus);
       submitData.append('categoryType', formData.categoryType);
+      submitData.append('foodType', formData.foodType);
       
       // Append images
       images.forEach(image => {
@@ -696,7 +567,7 @@ const BusinessForm = () => {
       }
     } catch (error) {
       console.error('Error saving business:', error);
-      alert(`Failed to ${isEdit ? 'update' : 'create'} business`);
+      alert(`Failed to ${isEdit ? 'update' : 'create'} business: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -750,6 +621,7 @@ const BusinessForm = () => {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Enter business name"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -762,6 +634,7 @@ const BusinessForm = () => {
                     onChange={handleInputChange}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Describe your business..."
                   />
                 </div>
                 <div>
@@ -774,24 +647,23 @@ const BusinessForm = () => {
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
-                    <option value="food">Food</option>
-                    <option value="table">Table</option>
-                    <option value="both">Both</option>
+                    <option value="Food">Food</option>
+                    <option value="Table">Table</option>
+                    <option value="Both">Both</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Request Status
+                    Food Type
                   </label>
                   <select
-                    name="requestStatus"
-                    value={formData.requestStatus}
+                    name="foodType"
+                    value={formData.foodType}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="Veg">Vegetarian</option>
+                    <option value="Non-Veg">Non-Vegetarian</option>
                   </select>
                 </div>
               </div>
@@ -814,6 +686,7 @@ const BusinessForm = () => {
                     value={formData.address.plotNo}
                     onChange={handleAddressChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Plot number"
                   />
                 </div>
                 <div>
@@ -826,6 +699,7 @@ const BusinessForm = () => {
                     value={formData.address.street}
                     onChange={handleAddressChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Street name"
                   />
                 </div>
                 <div>
@@ -838,6 +712,7 @@ const BusinessForm = () => {
                     value={formData.address.area}
                     onChange={handleAddressChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Area/Locality"
                   />
                 </div>
                 <div>
@@ -851,6 +726,7 @@ const BusinessForm = () => {
                     onChange={handleAddressChange}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="City"
                   />
                 </div>
                 <div>
@@ -864,6 +740,7 @@ const BusinessForm = () => {
                     onChange={handleAddressChange}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="State"
                   />
                 </div>
                 <div>
@@ -876,7 +753,9 @@ const BusinessForm = () => {
                     value={formData.address.pincode}
                     onChange={handleAddressChange}
                     required
+                    pattern="[0-9]{6}"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="6-digit pincode"
                   />
                 </div>
               </div>
@@ -884,14 +763,14 @@ const BusinessForm = () => {
 
             {/* Images */}
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Images</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Business Images</h3>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
                 <div className="text-center">
                   <Upload className="mx-auto h-12 w-12 text-gray-400" />
                   <div className="mt-4">
                     <label htmlFor="images" className="cursor-pointer">
                       <span className="mt-2 block text-sm font-medium text-gray-900">
-                        Upload images
+                        Upload business images
                       </span>
                       <input
                         id="images"
@@ -904,7 +783,7 @@ const BusinessForm = () => {
                       />
                     </label>
                     <p className="text-xs text-gray-500">
-                      PNG, JPG, GIF up to 10MB
+                      PNG, JPG, JPEG, GIF up to 10MB
                     </p>
                   </div>
                 </div>
@@ -912,23 +791,26 @@ const BusinessForm = () => {
 
               {/* Image Previews */}
               {imagePreviews.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={preview.startsWith('blob:') ? preview : `http://localhost:5000/${preview}`}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Preview</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={preview.startsWith('blob:') ? preview : preview}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

@@ -31,9 +31,7 @@
 //     const [deleteLoading, setDeleteLoading] = useState(null);
 //     const [currentPage, setCurrentPage] = useState(1);
 //     const [itemsPerPage] = useState(10);
-
 //     const [openMenu, setOpenMenu] = useState(null);
-
 
 //     useEffect(() => {
 //         fetchBusinesses();
@@ -44,7 +42,6 @@
 //             setLoading(true);
 //             setError(null);
 
-//             // Using POST as per your backend route
 //             const response = await axiosInstance.post('/details/list', {
 //                 page: currentPage,
 //                 limit: itemsPerPage
@@ -64,7 +61,6 @@
 //         }
 //     };
 
-//     // In your BusinessList component, the delete function is already implemented correctly:
 //     const deleteBusiness = async (id) => {
 //         if (!window.confirm('Are you sure you want to delete this business?')) {
 //             return;
@@ -388,19 +384,22 @@
 //                                                 <Edit className="h-4 w-4" />
 //                                                 <span>Edit</span>
 //                                             </Link>
+//                                             <Link
+//                                                 to={`/businesses/${business._id}/branches`}
+//                                                 className="flex items-center space-x-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors text-sm"
+//                                             >
+//                                                 <Building className="h-4 w-4" />
+//                                                 <span>Branches</span>
+//                                             </Link>
 //                                         </div>
 
 //                                         <div className="relative group">
-
 //                                             <button
 //                                                 onClick={() => setOpenMenu(openMenu === business._id ? null : business._id)}
 //                                                 className="p-1 text-gray-400 hover:text-gray-600"
 //                                             >
 //                                                 <MoreVertical className="h-4 w-4" />
 //                                             </button>
-
-
-
 
 //                                             <div
 //                                                 className={`absolute right-0 top-full mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10
@@ -449,8 +448,6 @@
 //                                                     </button>
 //                                                 </div>
 //                                             </div>
-
-
 //                                         </div>
 //                                     </div>
 //                                 </div>
@@ -464,7 +461,6 @@
 // };
 
 // export default BusinessList;
-
 
 
 
@@ -487,7 +483,9 @@ import {
     XCircle,
     Clock,
     AlertCircle,
-    RefreshCw
+    RefreshCw,
+    Users,
+    Tag
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -608,7 +606,10 @@ const BusinessList = () => {
     };
 
     const filteredBusinesses = businesses.filter(business => {
-        const matchesSearch = business.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        if (!business) return false;
+        const matchesSearch = 
+            business.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            business.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             business.address?.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             business.address?.state?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'all' || business.requestStatus === statusFilter;
@@ -616,6 +617,8 @@ const BusinessList = () => {
     });
 
     const getStatusBadge = (status) => {
+        if (!status) return null;
+        
         const statusConfig = {
             pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
             approved: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
@@ -627,14 +630,15 @@ const BusinessList = () => {
         return (
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
                 <Icon className="w-3 h-3 mr-1" />
-                {status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown'}
+                {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
         );
     };
 
     const getActiveBadge = (isActive) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
             {isActive ? 'Active' : 'Inactive'}
         </span>
     );
@@ -773,7 +777,17 @@ const BusinessList = () => {
                             <div key={business._id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
                                 {/* Business Images */}
                                 <div className="h-48 bg-gray-200 relative">
-                                    {business.images && business.images.length > 0 ? (
+                                    {business.fullImageUrls && business.fullImageUrls.length > 0 ? (
+                                        <img
+                                            src={business.fullImageUrls[0]}
+                                            alt={business.name}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'flex';
+                                            }}
+                                        />
+                                    ) : business.images && business.images.length > 0 ? (
                                         <img
                                             src={`http://localhost:5000/${business.images[0]}`}
                                             alt={business.name}
@@ -784,7 +798,7 @@ const BusinessList = () => {
                                             }}
                                         />
                                     ) : null}
-                                    <div className={`w-full h-full flex items-center justify-center bg-gray-100 ${business.images && business.images.length > 0 ? 'hidden' : ''}`}>
+                                    <div className={`w-full h-full flex items-center justify-center bg-gray-100 ${(business.fullImageUrls && business.fullImageUrls.length > 0) || (business.images && business.images.length > 0) ? 'hidden' : ''}`}>
                                         <Building className="h-12 w-12 text-gray-400" />
                                     </div>
                                     <div className="absolute top-3 right-3 flex space-x-2">
@@ -821,9 +835,15 @@ const BusinessList = () => {
                                         </span>
                                     </div>
 
-                                    <div className="flex justify-between items-center text-sm text-gray-600 mb-3">
-                                        <span>Commission: {business.defaultCommissionPercentage || 0}%</span>
-                                        <span>Branches: {business.branches?.length || 0}</span>
+                                    <div className="grid grid-cols-2 gap-2 mb-3">
+                                        <div className="flex items-center text-sm text-gray-600">
+                                            <Users className="h-4 w-4 mr-1 text-gray-400" />
+                                            <span>{business.branches?.length || 0} Branches</span>
+                                        </div>
+                                        <div className="flex items-center text-sm text-gray-600">
+                                            <Tag className="h-4 w-4 mr-1 text-gray-400" />
+                                            <span>{business.defaultCommissionPercentage || 0}% Comm.</span>
+                                        </div>
                                     </div>
 
                                     <div className="flex items-center justify-between text-xs text-gray-500">
@@ -831,7 +851,7 @@ const BusinessList = () => {
                                             <Calendar className="h-3 w-3 mr-1" />
                                             {business.createdAt ? new Date(business.createdAt).toLocaleDateString() : 'Unknown date'}
                                         </div>
-                                        <span className="capitalize">{business.categoryType || 'both'}</span>
+                                        <span className="capitalize">{business.categoryType || 'Both'}</span>
                                     </div>
                                 </div>
 
