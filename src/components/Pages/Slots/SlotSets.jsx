@@ -1,7 +1,607 @@
-// components/Pages/Slots/SlotSets.js
+// // components/Pages/Slots/SlotSets.js
+// import React, { useState, useEffect } from 'react';
+// import axiosInstance from '../../../config/AxiosInstance';
+// import { Plus, Edit, Trash2, Loader, Clock, Building, X, ChevronDown, ChevronUp } from 'lucide-react';
+
+// const SlotSets = () => {
+//   const [slotSets, setSlotSets] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [showModal, setShowModal] = useState(false);
+//   const [editingSlotSet, setEditingSlotSet] = useState(null);
+//   const [businesses, setBusinesses] = useState([]);
+//   const [branches, setBranches] = useState([]);
+//   const [tables, setTables] = useState([]);
+//   const [expandedDays, setExpandedDays] = useState({});
+
+//   const [formData, setFormData] = useState({
+//     slotSetName: '',
+//     businessId: '',
+//     branchId: '',
+//     tableId: '',
+//     monday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//     tuesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//     wednesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//     thursday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//     friday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//     saturday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//     sunday: { isOpen: true, times: [{ time: '', isAvailable: true }] }
+//   });
+
+//   const days = [
+//     { key: 'monday', label: 'Monday' },
+//     { key: 'tuesday', label: 'Tuesday' },
+//     { key: 'wednesday', label: 'Wednesday' },
+//     { key: 'thursday', label: 'Thursday' },
+//     { key: 'friday', label: 'Friday' },
+//     { key: 'saturday', label: 'Saturday' },
+//     { key: 'sunday', label: 'Sunday' }
+//   ];
+
+//   useEffect(() => {
+//     fetchBusinesses();
+//   }, []);
+
+//   const fetchBusinesses = async () => {
+//     try {
+//       const response = await axiosInstance.post('/details/list', {
+//         page: 1,
+//         limit: 100
+//       });
+//       if (response.data.success) {
+//         setBusinesses(response.data.data);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching businesses:', error);
+//       alert('Failed to fetch businesses');
+//     }
+//   };
+
+//   const fetchBranches = (businessId) => {
+//     const selectedBusiness = businesses.find(business => business._id === businessId);
+//     if (selectedBusiness && selectedBusiness.branches) {
+//       setBranches(selectedBusiness.branches);
+//     } else {
+//       setBranches([]);
+//     }
+//   };
+
+//   const fetchTables = async (businessId, branchId) => {
+//     try {
+//       const response = await axiosInstance.post('/business/get-all', {
+//         model: 'Table',
+//         businessId,
+//         ...(branchId && { branchId })
+//       });
+//       if (response.data.success) {
+//         setTables(response.data.data);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching tables:', error);
+//       setTables([]);
+//     }
+//   };
+
+//   const fetchSlotSets = async (businessId) => {
+//     try {
+//       setLoading(true);
+//       const response = await axiosInstance.get(`/slots/business/${businessId}`);
+//       setSlotSets(response.data);
+//     } catch (error) {
+//       console.error('Error fetching slot sets:', error);
+//       setSlotSets([]);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleBusinessChange = (businessId) => {
+//     setFormData({ 
+//       ...formData, 
+//       businessId,
+//       branchId: '',
+//       tableId: ''
+//     });
+//     fetchBranches(businessId);
+//     setTables([]);
+//     if (businessId) {
+//       fetchSlotSets(businessId);
+//     } else {
+//       setSlotSets([]);
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleBranchChange = (branchId) => {
+//     setFormData({ 
+//       ...formData, 
+//       branchId,
+//       tableId: ''
+//     });
+//     fetchTables(formData.businessId, branchId);
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+    
+//     // Validate form data
+//     if (!formData.slotSetName.trim()) {
+//       alert('Please enter a slot set name');
+//       return;
+//     }
+
+//     if (!formData.businessId) {
+//       alert('Please select a business');
+//       return;
+//     }
+
+//     // Validate time slots
+//     for (const day of days) {
+//       const dayData = formData[day.key];
+//       if (dayData.isOpen) {
+//         const validTimes = dayData.times.filter(timeSlot => timeSlot.time.trim() !== '');
+//         if (validTimes.length === 0) {
+//           alert(`Please add at least one time slot for ${day.label}`);
+//           return;
+//         }
+//       }
+//     }
+
+//     try {
+//       if (editingSlotSet) {
+//         await axiosInstance.put(`/slots/${editingSlotSet._id}`, formData);
+//         alert('Slot set updated successfully');
+//       } else {
+//         await axiosInstance.post('/slots', formData);
+//         alert('Slot set created successfully');
+//       }
+//       setShowModal(false);
+//       resetForm();
+//       if (formData.businessId) {
+//         fetchSlotSets(formData.businessId);
+//       }
+//     } catch (error) {
+//       console.error('Error saving slot set:', error);
+//       alert('Failed to save slot set');
+//     }
+//   };
+
+//   const handleEdit = (slotSet) => {
+//     setEditingSlotSet(slotSet);
+//     setFormData({
+//       slotSetName: slotSet.slotSetName,
+//       businessId: slotSet.businessId,
+//       branchId: slotSet.branchId || '',
+//       tableId: slotSet.tableId || '',
+//       monday: slotSet.monday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       tuesday: slotSet.tuesday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       wednesday: slotSet.wednesday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       thursday: slotSet.thursday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       friday: slotSet.friday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       saturday: slotSet.saturday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       sunday: slotSet.sunday || { isOpen: true, times: [{ time: '', isAvailable: true }] }
+//     });
+    
+//     // Fetch branches and tables for the business
+//     fetchBranches(slotSet.businessId);
+//     fetchTables(slotSet.businessId, slotSet.branchId);
+    
+//     setShowModal(true);
+//   };
+
+//   const handleDelete = async (id) => {
+//     if (!window.confirm('Are you sure you want to delete this slot set?')) return;
+
+//     try {
+//       await axiosInstance.delete(`/slots/${id}`);
+//       alert('Slot set deleted successfully');
+//       if (formData.businessId) {
+//         fetchSlotSets(formData.businessId);
+//       }
+//     } catch (error) {
+//       console.error('Error deleting slot set:', error);
+//       alert('Failed to delete slot set');
+//     }
+//   };
+
+//   const resetForm = () => {
+//     setFormData({
+//       slotSetName: '',
+//       businessId: '',
+//       branchId: '',
+//       tableId: '',
+//       monday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       tuesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       wednesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       thursday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       friday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       saturday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
+//       sunday: { isOpen: true, times: [{ time: '', isAvailable: true }] }
+//     });
+//     setEditingSlotSet(null);
+//     setBranches([]);
+//     setTables([]);
+//     setExpandedDays({});
+//   };
+
+//   const addTimeSlot = (day) => {
+//     const updatedDay = { ...formData[day] };
+//     updatedDay.times = [...updatedDay.times, { time: '', isAvailable: true }];
+//     setFormData({ ...formData, [day]: updatedDay });
+//   };
+
+//   const updateTimeSlot = (day, index, field, value) => {
+//     const updatedDay = { ...formData[day] };
+//     updatedDay.times[index][field] = value;
+//     setFormData({ ...formData, [day]: updatedDay });
+//   };
+
+//   const removeTimeSlot = (day, index) => {
+//     const updatedDay = { ...formData[day] };
+//     updatedDay.times = updatedDay.times.filter((_, i) => i !== index);
+//     setFormData({ ...formData, [day]: updatedDay });
+//   };
+
+//   const toggleDayOpen = (day) => {
+//     const updatedDay = { ...formData[day], isOpen: !formData[day].isOpen };
+//     setFormData({ ...formData, [day]: updatedDay });
+//   };
+
+//   const toggleDayExpansion = (day) => {
+//     setExpandedDays(prev => ({
+//       ...prev,
+//       [day]: !prev[day]
+//     }));
+//   };
+
+//   const getBusinessName = (businessId) => {
+//     const business = businesses.find(b => b._id === businessId);
+//     return business ? business.name : 'Unknown Business';
+//   };
+
+//   const getBranchName = (branchId) => {
+//     if (!branchId) return 'All Branches';
+//     for (let business of businesses) {
+//       if (business.branches) {
+//         const branch = business.branches.find(b => b._id === branchId);
+//         if (branch) return branch.name;
+//       }
+//     }
+//     return 'Unknown Branch';
+//   };
+
+//   const getTableNumber = (tableId) => {
+//     if (!tableId) return 'All Tables';
+//     const table = tables.find(t => t._id === tableId);
+//     return table ? `Table ${table.tableNumber}` : 'Unknown Table';
+//   };
+
+//   const formatTimeSlots = (slotSet) => {
+//     const dayInfo = days.map(day => {
+//       const dayData = slotSet[day.key];
+//       if (!dayData || !dayData.isOpen || !dayData.times || dayData.times.length === 0) {
+//         return null;
+//       }
+//       const times = dayData.times.map(t => t.time).join(', ');
+//       return `${day.label}: ${times}`;
+//     }).filter(Boolean);
+
+//     return dayInfo.length > 0 ? dayInfo.slice(0, 2).join(' | ') : 'No time slots configured';
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gray-50 p-6">
+//       <div className="max-w-7xl mx-auto">
+//         <div className="mb-6 flex justify-between items-center">
+//           <div>
+//             <h1 className="text-2xl font-bold text-gray-900">Slot Sets</h1>
+//             <p className="text-gray-600 mt-2">Manage time slots for scheduling</p>
+//           </div>
+//           <button
+//             onClick={() => setShowModal(true)}
+//             className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+//           >
+//             <Plus className="h-5 w-5" />
+//             <span>Add Slot Set</span>
+//           </button>
+//         </div>
+
+//         {/* Business Selection */}
+//         <div className="bg-white p-4 rounded-lg shadow mb-6">
+//           <label className="block text-sm font-medium text-gray-700 mb-2">
+//             Select Business to View Slot Sets
+//           </label>
+//           <select
+//             value={formData.businessId}
+//             onChange={(e) => handleBusinessChange(e.target.value)}
+//             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//           >
+//             <option value="">Select Business</option>
+//             {businesses.map(business => (
+//               <option key={business._id} value={business._id}>
+//                 {business.name}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         {loading ? (
+//           <div className="flex items-center justify-center py-12">
+//             <Loader className="h-6 w-6 animate-spin text-green-600" />
+//             <span className="ml-2 text-gray-600">Loading slot sets...</span>
+//           </div>
+//         ) : (
+//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+//             {slotSets.map((slotSet) => (
+//               <div key={slotSet._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+//                 <div className="p-6">
+//                   <div className="flex justify-between items-start mb-4">
+//                     <h3 className="text-lg font-semibold text-gray-900">
+//                       {slotSet.slotSetName}
+//                     </h3>
+//                     <span className={`px-2 py-1 text-xs rounded-full ${
+//                       slotSet.tableId ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+//                     }`}>
+//                       {slotSet.tableId ? 'Table Specific' : 'General'}
+//                     </span>
+//                   </div>
+                  
+//                   <div className="space-y-2 text-sm text-gray-600 mb-4">
+//                     <div className="flex items-center">
+//                       <Building className="h-4 w-4 mr-2" />
+//                       <span className="font-medium">{getBusinessName(slotSet.businessId)}</span>
+//                     </div>
+//                     {slotSet.branchId && (
+//                       <div className="ml-6">
+//                         <span className="font-medium">Branch:</span> {getBranchName(slotSet.branchId)}
+//                       </div>
+//                     )}
+//                     {slotSet.tableId && (
+//                       <div className="ml-6">
+//                         <span className="font-medium">Table:</span> {getTableNumber(slotSet.tableId)}
+//                       </div>
+//                     )}
+//                   </div>
+
+//                   <div className="text-sm text-gray-500 mb-4">
+//                     {formatTimeSlots(slotSet)}
+//                   </div>
+
+//                   <div className="flex space-x-2">
+//                     <button
+//                       onClick={() => handleEdit(slotSet)}
+//                       className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+//                     >
+//                       <Edit className="h-4 w-4" />
+//                       <span>Edit</span>
+//                     </button>
+//                     <button
+//                       onClick={() => handleDelete(slotSet._id)}
+//                       className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+//                     >
+//                       <Trash2 className="h-4 w-4" />
+//                       <span>Delete</span>
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         )}
+
+//         {slotSets.length === 0 && formData.businessId && !loading && (
+//           <div className="text-center py-12">
+//             <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//             <h3 className="text-lg font-medium text-gray-900 mb-2">No slot sets found</h3>
+//             <p className="text-gray-500">Create your first slot set for this business.</p>
+//           </div>
+//         )}
+
+//         {/* Create/Edit Modal */}
+//         {showModal && (
+//           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+//             <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+//               <div className="p-6">
+//                 <div className="flex justify-between items-center mb-4">
+//                   <h2 className="text-xl font-bold text-gray-900">
+//                     {editingSlotSet ? 'Edit Slot Set' : 'Create Slot Set'}
+//                   </h2>
+//                   <button
+//                     onClick={() => {
+//                       setShowModal(false);
+//                       resetForm();
+//                     }}
+//                     className="text-gray-400 hover:text-gray-600"
+//                   >
+//                     <X className="h-6 w-6" />
+//                   </button>
+//                 </div>
+
+//                 <form onSubmit={handleSubmit} className="space-y-6">
+//                   {/* Basic Information */}
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Slot Set Name *
+//                       </label>
+//                       <input
+//                         type="text"
+//                         required
+//                         value={formData.slotSetName}
+//                         onChange={(e) => setFormData({ ...formData, slotSetName: e.target.value })}
+//                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                         placeholder="e.g., Standard Hours, Weekend Special"
+//                       />
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Business *
+//                       </label>
+//                       <select
+//                         required
+//                         value={formData.businessId}
+//                         onChange={(e) => handleBusinessChange(e.target.value)}
+//                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                       >
+//                         <option value="">Select Business</option>
+//                         {businesses.map(business => (
+//                           <option key={business._id} value={business._id}>
+//                             {business.name}
+//                           </option>
+//                         ))}
+//                       </select>
+//                     </div>
+//                   </div>
+
+//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Branch (Optional)
+//                       </label>
+//                       <select
+//                         value={formData.branchId}
+//                         onChange={(e) => handleBranchChange(e.target.value)}
+//                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                       >
+//                         <option value="">All Branches</option>
+//                         {branches.map(branch => (
+//                           <option key={branch._id} value={branch._id}>
+//                             {branch.name}
+//                           </option>
+//                         ))}
+//                       </select>
+//                     </div>
+
+//                     <div>
+//                       <label className="block text-sm font-medium text-gray-700 mb-1">
+//                         Table (Optional)
+//                       </label>
+//                       <select
+//                         value={formData.tableId}
+//                         onChange={(e) => setFormData({ ...formData, tableId: e.target.value })}
+//                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                       >
+//                         <option value="">All Tables</option>
+//                         {tables.map(table => (
+//                           <option key={table._id} value={table._id}>
+//                             Table {table.tableNumber} ({table.seatingCapacity} seats)
+//                           </option>
+//                         ))}
+//                       </select>
+//                     </div>
+//                   </div>
+
+//                   {/* Day-wise Time Slots */}
+//                   <div>
+//                     <h3 className="text-lg font-medium text-gray-900 mb-4">Time Slots</h3>
+//                     <div className="space-y-3">
+//                       {days.map(({ key, label }) => (
+//                         <div key={key} className="border border-gray-200 rounded-lg">
+//                           <div className="flex items-center justify-between p-4 bg-gray-50">
+//                             <div className="flex items-center space-x-3">
+//                               <input
+//                                 type="checkbox"
+//                                 checked={formData[key].isOpen}
+//                                 onChange={() => toggleDayOpen(key)}
+//                                 className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+//                               />
+//                               <span className="font-medium text-gray-900">{label}</span>
+//                               <span className={`px-2 py-1 text-xs rounded-full ${
+//                                 formData[key].isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+//                               }`}>
+//                                 {formData[key].isOpen ? 'Open' : 'Closed'}
+//                               </span>
+//                             </div>
+//                             <button
+//                               type="button"
+//                               onClick={() => toggleDayExpansion(key)}
+//                               className="text-gray-400 hover:text-gray-600"
+//                             >
+//                               {expandedDays[key] ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+//                             </button>
+//                           </div>
+
+//                           {formData[key].isOpen && expandedDays[key] && (
+//                             <div className="p-4 border-t border-gray-200">
+//                               <div className="space-y-3">
+//                                 {formData[key].times.map((timeSlot, index) => (
+//                                   <div key={index} className="flex items-center space-x-3">
+//                                     <input
+//                                       type="text"
+//                                       placeholder="e.g., 9:00 AM, 2:30 PM"
+//                                       value={timeSlot.time}
+//                                       onChange={(e) => updateTimeSlot(key, index, 'time', e.target.value)}
+//                                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                                     />
+//                                     <label className="flex items-center space-x-2">
+//                                       <input
+//                                         type="checkbox"
+//                                         checked={timeSlot.isAvailable}
+//                                         onChange={(e) => updateTimeSlot(key, index, 'isAvailable', e.target.checked)}
+//                                         className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+//                                       />
+//                                       <span className="text-sm text-gray-700">Available</span>
+//                                     </label>
+//                                     <button
+//                                       type="button"
+//                                       onClick={() => removeTimeSlot(key, index)}
+//                                       disabled={formData[key].times.length === 1}
+//                                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+//                                     >
+//                                       <X className="h-4 w-4" />
+//                                     </button>
+//                                   </div>
+//                                 ))}
+//                                 <button
+//                                   type="button"
+//                                   onClick={() => addTimeSlot(key)}
+//                                   className="text-sm text-green-600 hover:text-green-700 font-medium"
+//                                 >
+//                                   + Add Time Slot
+//                                 </button>
+//                               </div>
+//                             </div>
+//                           )}
+//                         </div>
+//                       ))}
+//                     </div>
+//                   </div>
+
+//                   <div className="flex space-x-3 pt-4">
+//                     <button
+//                       type="button"
+//                       onClick={() => {
+//                         setShowModal(false);
+//                         resetForm();
+//                       }}
+//                       className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+//                     >
+//                       Cancel
+//                     </button>
+//                     <button
+//                       type="submit"
+//                       className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+//                     >
+//                       {editingSlotSet ? 'Update' : 'Create'} Slot Set
+//                     </button>
+//                   </div>
+//                 </form>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default SlotSets;
+
+
+
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../config/AxiosInstance';
-import { Plus, Edit, Trash2, Loader, Clock, Building, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader, Clock, Building, X, ChevronDown, ChevronUp, Calendar, CheckCircle, XCircle } from 'lucide-react';
 
 const SlotSets = () => {
   const [slotSets, setSlotSets] = useState([]);
@@ -10,21 +610,19 @@ const SlotSets = () => {
   const [editingSlotSet, setEditingSlotSet] = useState(null);
   const [businesses, setBusinesses] = useState([]);
   const [branches, setBranches] = useState([]);
-  const [tables, setTables] = useState([]);
   const [expandedDays, setExpandedDays] = useState({});
 
   const [formData, setFormData] = useState({
     slotSetName: '',
     businessId: '',
     branchId: '',
-    tableId: '',
-    monday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-    tuesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-    wednesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-    thursday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-    friday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-    saturday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-    sunday: { isOpen: true, times: [{ time: '', isAvailable: true }] }
+    monday: { isOpen: true, times: [] },
+    tuesday: { isOpen: true, times: [] },
+    wednesday: { isOpen: true, times: [] },
+    thursday: { isOpen: true, times: [] },
+    friday: { isOpen: true, times: [] },
+    saturday: { isOpen: true, times: [] },
+    sunday: { isOpen: true, times: [] }
   });
 
   const days = [
@@ -37,12 +635,22 @@ const SlotSets = () => {
     { key: 'sunday', label: 'Sunday' }
   ];
 
+  const timeOptions = [
+    '12:00 AM', '12:30 AM', '1:00 AM', '1:30 AM', '2:00 AM', '2:30 AM', '3:00 AM', '3:30 AM',
+    '4:00 AM', '4:30 AM', '5:00 AM', '5:30 AM', '6:00 AM', '6:30 AM', '7:00 AM', '7:30 AM',
+    '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+    '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM',
+    '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM',
+    '8:00 PM', '8:30 PM', '9:00 PM', '9:30 PM', '10:00 PM', '10:30 PM', '11:00 PM', '11:30 PM'
+  ];
+
   useEffect(() => {
     fetchBusinesses();
   }, []);
 
   const fetchBusinesses = async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.post('/details/list', {
         page: 1,
         limit: 100
@@ -53,6 +661,8 @@ const SlotSets = () => {
     } catch (error) {
       console.error('Error fetching businesses:', error);
       alert('Failed to fetch businesses');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,27 +675,20 @@ const SlotSets = () => {
     }
   };
 
-  const fetchTables = async (businessId, branchId) => {
-    try {
-      const response = await axiosInstance.post('/business/get-all', {
-        model: 'Table',
-        businessId,
-        ...(branchId && { branchId })
-      });
-      if (response.data.success) {
-        setTables(response.data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching tables:', error);
-      setTables([]);
-    }
-  };
-
-  const fetchSlotSets = async (businessId) => {
+  const fetchSlotSets = async (businessId, branchId = '') => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/slots/business/${businessId}`);
-      setSlotSets(response.data);
+      let url = `/slots/business/${businessId}`;
+      if (branchId) {
+        url += `/${branchId}`;
+      }
+      
+      const response = await axiosInstance.get(url);
+      if (response.data && Array.isArray(response.data)) {
+        setSlotSets(response.data);
+      } else {
+        setSlotSets([]);
+      }
     } catch (error) {
       console.error('Error fetching slot sets:', error);
       setSlotSets([]);
@@ -95,29 +698,30 @@ const SlotSets = () => {
   };
 
   const handleBusinessChange = (businessId) => {
-    setFormData({ 
+    const newFormData = { 
       ...formData, 
       businessId,
-      branchId: '',
-      tableId: ''
-    });
+      branchId: ''
+    };
+    setFormData(newFormData);
     fetchBranches(businessId);
-    setTables([]);
+    setSlotSets([]);
+    
     if (businessId) {
       fetchSlotSets(businessId);
-    } else {
-      setSlotSets([]);
-      setLoading(false);
     }
   };
 
   const handleBranchChange = (branchId) => {
-    setFormData({ 
+    const newFormData = { 
       ...formData, 
-      branchId,
-      tableId: ''
-    });
-    fetchTables(formData.businessId, branchId);
+      branchId
+    };
+    setFormData(newFormData);
+    
+    if (formData.businessId) {
+      fetchSlotSets(formData.businessId, branchId);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -134,56 +738,80 @@ const SlotSets = () => {
       return;
     }
 
-    // Validate time slots
-    for (const day of days) {
-      const dayData = formData[day.key];
-      if (dayData.isOpen) {
-        const validTimes = dayData.times.filter(timeSlot => timeSlot.time.trim() !== '');
-        if (validTimes.length === 0) {
-          alert(`Please add at least one time slot for ${day.label}`);
-          return;
-        }
-      }
+    if (!formData.branchId) {
+      alert('Please select a branch');
+      return;
     }
+
+    // Prepare data according to API format
+    const payload = {
+      businessId: formData.businessId,
+      branchId: formData.branchId,
+      slotSetName: formData.slotSetName,
+      ...days.reduce((acc, day) => {
+        const dayData = formData[day.key];
+        // Ensure times array has proper format
+        const formattedTimes = dayData.times.map(time => ({
+          time: time.time,
+          isAvailable: time.isAvailable !== false // Default to true if not specified
+        }));
+        
+        acc[day.key] = {
+          isOpen: dayData.isOpen,
+          times: formattedTimes
+        };
+        return acc;
+      }, {})
+    };
 
     try {
       if (editingSlotSet) {
-        await axiosInstance.put(`/slots/${editingSlotSet._id}`, formData);
-        alert('Slot set updated successfully');
+        const response = await axiosInstance.put(`/slots/${editingSlotSet._id}`, payload);
+        if (response.data) {
+          alert('Slot set updated successfully');
+        }
       } else {
-        await axiosInstance.post('/slots', formData);
-        alert('Slot set created successfully');
+        const response = await axiosInstance.post('/slots', payload);
+        if (response.data) {
+          alert('Slot set created successfully');
+        }
       }
       setShowModal(false);
       resetForm();
       if (formData.businessId) {
-        fetchSlotSets(formData.businessId);
+        fetchSlotSets(formData.businessId, formData.branchId);
       }
     } catch (error) {
       console.error('Error saving slot set:', error);
-      alert('Failed to save slot set');
+      alert(`Failed to save slot set: ${error.response?.data?.message || error.message}`);
     }
   };
 
   const handleEdit = (slotSet) => {
     setEditingSlotSet(slotSet);
-    setFormData({
+    
+    // Transform API data to form format
+    const transformedData = {
       slotSetName: slotSet.slotSetName,
       businessId: slotSet.businessId,
       branchId: slotSet.branchId || '',
-      tableId: slotSet.tableId || '',
-      monday: slotSet.monday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      tuesday: slotSet.tuesday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      wednesday: slotSet.wednesday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      thursday: slotSet.thursday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      friday: slotSet.friday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      saturday: slotSet.saturday || { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      sunday: slotSet.sunday || { isOpen: true, times: [{ time: '', isAvailable: true }] }
-    });
+      ...days.reduce((acc, day) => {
+        const dayData = slotSet[day.key];
+        acc[day.key] = {
+          isOpen: dayData?.isOpen || false,
+          times: dayData?.times?.map(t => ({
+            time: t.time,
+            isAvailable: t.isAvailable !== false
+          })) || []
+        };
+        return acc;
+      }, {})
+    };
     
-    // Fetch branches and tables for the business
+    setFormData(transformedData);
+    
+    // Fetch branches for the business
     fetchBranches(slotSet.businessId);
-    fetchTables(slotSet.businessId, slotSet.branchId);
     
     setShowModal(true);
   };
@@ -195,7 +823,7 @@ const SlotSets = () => {
       await axiosInstance.delete(`/slots/${id}`);
       alert('Slot set deleted successfully');
       if (formData.businessId) {
-        fetchSlotSets(formData.businessId);
+        fetchSlotSets(formData.businessId, formData.branchId);
       }
     } catch (error) {
       console.error('Error deleting slot set:', error);
@@ -208,18 +836,16 @@ const SlotSets = () => {
       slotSetName: '',
       businessId: '',
       branchId: '',
-      tableId: '',
-      monday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      tuesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      wednesday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      thursday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      friday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      saturday: { isOpen: true, times: [{ time: '', isAvailable: true }] },
-      sunday: { isOpen: true, times: [{ time: '', isAvailable: true }] }
+      monday: { isOpen: true, times: [] },
+      tuesday: { isOpen: true, times: [] },
+      wednesday: { isOpen: true, times: [] },
+      thursday: { isOpen: true, times: [] },
+      friday: { isOpen: true, times: [] },
+      saturday: { isOpen: true, times: [] },
+      sunday: { isOpen: true, times: [] }
     });
     setEditingSlotSet(null);
     setBranches([]);
-    setTables([]);
     setExpandedDays({});
   };
 
@@ -269,12 +895,6 @@ const SlotSets = () => {
     return 'Unknown Branch';
   };
 
-  const getTableNumber = (tableId) => {
-    if (!tableId) return 'All Tables';
-    const table = tables.find(t => t._id === tableId);
-    return table ? `Table ${table.tableNumber}` : 'Unknown Table';
-  };
-
   const formatTimeSlots = (slotSet) => {
     const dayInfo = days.map(day => {
       const dayData = slotSet[day.key];
@@ -282,10 +902,20 @@ const SlotSets = () => {
         return null;
       }
       const times = dayData.times.map(t => t.time).join(', ');
-      return `${day.label}: ${times}`;
+      return `${day.label.substring(0, 3)}: ${times}`;
     }).filter(Boolean);
 
-    return dayInfo.length > 0 ? dayInfo.slice(0, 2).join(' | ') : 'No time slots configured';
+    return dayInfo.length > 0 ? dayInfo.slice(0, 3).join(' | ') : 'No time slots configured';
+  };
+
+  const getDayStatus = (dayData) => {
+    if (!dayData || !dayData.isOpen) {
+      return { color: 'bg-red-100 text-red-800', icon: XCircle, text: 'Closed' };
+    }
+    if (dayData.times && dayData.times.length > 0) {
+      return { color: 'bg-green-100 text-green-800', icon: CheckCircle, text: 'Open' };
+    }
+    return { color: 'bg-yellow-100 text-yellow-800', icon: Clock, text: 'No Slots' };
   };
 
   return (
@@ -294,11 +924,12 @@ const SlotSets = () => {
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Slot Sets</h1>
-            <p className="text-gray-600 mt-2">Manage time slots for scheduling</p>
+            <p className="text-gray-600 mt-2">Manage time slots for business scheduling</p>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            disabled={!formData.businessId}
+            className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="h-5 w-5" />
             <span>Add Slot Set</span>
@@ -307,21 +938,45 @@ const SlotSets = () => {
 
         {/* Business Selection */}
         <div className="bg-white p-4 rounded-lg shadow mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Business to View Slot Sets
-          </label>
-          <select
-            value={formData.businessId}
-            onChange={(e) => handleBusinessChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          >
-            <option value="">Select Business</option>
-            {businesses.map(business => (
-              <option key={business._id} value={business._id}>
-                {business.name}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Business *
+              </label>
+              <select
+                value={formData.businessId}
+                onChange={(e) => handleBusinessChange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="">Select Business</option>
+                {businesses.map(business => (
+                  <option key={business._id} value={business._id}>
+                    {business.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* {formData.businessId && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Branch *
+                </label>
+                <select
+                  value={formData.branchId}
+                  onChange={(e) => handleBranchChange(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="">Select Branch</option>
+                  {branches.map(branch => (
+                    <option key={branch._id} value={branch._id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )} */}
+          </div>
         </div>
 
         {loading ? (
@@ -330,70 +985,94 @@ const SlotSets = () => {
             <span className="ml-2 text-gray-600">Loading slot sets...</span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {slotSets.map((slotSet) => (
-              <div key={slotSet._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {slotSet.slotSetName}
-                    </h3>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      slotSet.tableId ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {slotSet.tableId ? 'Table Specific' : 'General'}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm text-gray-600 mb-4">
-                    <div className="flex items-center">
-                      <Building className="h-4 w-4 mr-2" />
-                      <span className="font-medium">{getBusinessName(slotSet.businessId)}</span>
-                    </div>
-                    {slotSet.branchId && (
-                      <div className="ml-6">
-                        <span className="font-medium">Branch:</span> {getBranchName(slotSet.branchId)}
-                      </div>
-                    )}
-                    {slotSet.tableId && (
-                      <div className="ml-6">
-                        <span className="font-medium">Table:</span> {getTableNumber(slotSet.tableId)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-sm text-gray-500 mb-4">
-                    {formatTimeSlots(slotSet)}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEdit(slotSet)}
-                      className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
-                    >
-                      <Edit className="h-4 w-4" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(slotSet._id)}
-                      className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span>Delete</span>
-                    </button>
-                  </div>
+          <>
+            {formData.businessId && formData.branchId && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    Slot Sets for {getBusinessName(formData.businessId)} - {getBranchName(formData.branchId)}
+                  </h3>
+                  <span className="text-sm text-gray-500">
+                    {slotSets.length} slot set{slotSets.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {slotSets.length === 0 && formData.businessId && !loading && (
-          <div className="text-center py-12">
-            <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No slot sets found</h3>
-            <p className="text-gray-500">Create your first slot set for this business.</p>
-          </div>
+            {slotSets.length === 0 && formData.businessId && formData.branchId ? (
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <Clock className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No slot sets found</h3>
+                <p className="text-gray-500 mb-4">Create your first slot set for this branch.</p>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mx-auto"
+                >
+                  <Plus className="h-5 w-5" />
+                  <span>Create Slot Set</span>
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {slotSets.map((slotSet) => (
+                  <div key={slotSet._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-gray-900 truncate">
+                            {slotSet.slotSetName}
+                          </h3>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Created: {new Date(slotSet.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Day Status Summary */}
+                      <div className="mb-4">
+                        <div className="grid grid-cols-7 gap-1 mb-2">
+                          {days.map(day => {
+                            const dayData = slotSet[day.key];
+                            const status = getDayStatus(dayData);
+                            const Icon = status.icon;
+                            return (
+                              <div key={day.key} className="text-center">
+                                <div className={`p-1 rounded ${status.color}`}>
+                                  <Icon className="h-3 w-3 mx-auto" />
+                                </div>
+                                <div className="text-xs mt-1 font-medium">{day.label.substring(0, 1)}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="text-sm text-gray-500 mb-4">
+                        {formatTimeSlots(slotSet)}
+                      </div>
+
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(slotSet)}
+                          className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(slotSet._id)}
+                          className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* Create/Edit Modal */}
@@ -401,7 +1080,7 @@ const SlotSets = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold text-gray-900">
                     {editingSlotSet ? 'Edit Slot Set' : 'Create Slot Set'}
                   </h2>
@@ -410,7 +1089,7 @@ const SlotSets = () => {
                       setShowModal(false);
                       resetForm();
                     }}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 p-1"
                   >
                     <X className="h-6 w-6" />
                   </button>
@@ -429,7 +1108,7 @@ const SlotSets = () => {
                         value={formData.slotSetName}
                         onChange={(e) => setFormData({ ...formData, slotSetName: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        placeholder="e.g., Standard Hours, Weekend Special"
+                        placeholder="e.g., Standard Hours, Weekend Timing"
                       />
                     </div>
 
@@ -451,40 +1130,22 @@ const SlotSets = () => {
                         ))}
                       </select>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Branch (Optional)
+                        Branch *
                       </label>
                       <select
+                        required
                         value={formData.branchId}
                         onChange={(e) => handleBranchChange(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        disabled={!formData.businessId}
                       >
-                        <option value="">All Branches</option>
+                        <option value="">Select Branch</option>
                         {branches.map(branch => (
                           <option key={branch._id} value={branch._id}>
                             {branch.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Table (Optional)
-                      </label>
-                      <select
-                        value={formData.tableId}
-                        onChange={(e) => setFormData({ ...formData, tableId: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      >
-                        <option value="">All Tables</option>
-                        {tables.map(table => (
-                          <option key={table._id} value={table._id}>
-                            Table {table.tableNumber} ({table.seatingCapacity} seats)
                           </option>
                         ))}
                       </select>
@@ -493,10 +1154,14 @@ const SlotSets = () => {
 
                   {/* Day-wise Time Slots */}
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Time Slots</h3>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-medium text-gray-900">Time Slots Configuration</h3>
+                      <p className="text-sm text-gray-500">Configure time slots for each day</p>
+                    </div>
+                    
                     <div className="space-y-3">
                       {days.map(({ key, label }) => (
-                        <div key={key} className="border border-gray-200 rounded-lg">
+                        <div key={key} className="border border-gray-200 rounded-lg overflow-hidden">
                           <div className="flex items-center justify-between p-4 bg-gray-50">
                             <div className="flex items-center space-x-3">
                               <input
@@ -512,53 +1177,77 @@ const SlotSets = () => {
                                 {formData[key].isOpen ? 'Open' : 'Closed'}
                               </span>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => toggleDayExpansion(key)}
-                              className="text-gray-400 hover:text-gray-600"
-                            >
-                              {expandedDays[key] ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                            </button>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm text-gray-500">
+                                {formData[key].times.length} time slot{formData[key].times.length !== 1 ? 's' : ''}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleDayExpansion(key)}
+                                className="text-gray-400 hover:text-gray-600 p-1"
+                              >
+                                {expandedDays[key] ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                              </button>
+                            </div>
                           </div>
 
                           {formData[key].isOpen && expandedDays[key] && (
-                            <div className="p-4 border-t border-gray-200">
+                            <div className="p-4 border-t border-gray-200 bg-gray-50">
                               <div className="space-y-3">
                                 {formData[key].times.map((timeSlot, index) => (
-                                  <div key={index} className="flex items-center space-x-3">
-                                    <input
-                                      type="text"
-                                      placeholder="e.g., 9:00 AM, 2:30 PM"
-                                      value={timeSlot.time}
-                                      onChange={(e) => updateTimeSlot(key, index, 'time', e.target.value)}
-                                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
-                                    <label className="flex items-center space-x-2">
-                                      <input
-                                        type="checkbox"
-                                        checked={timeSlot.isAvailable}
-                                        onChange={(e) => updateTimeSlot(key, index, 'isAvailable', e.target.checked)}
-                                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                      />
-                                      <span className="text-sm text-gray-700">Available</span>
-                                    </label>
-                                    <button
-                                      type="button"
-                                      onClick={() => removeTimeSlot(key, index)}
-                                      disabled={formData[key].times.length === 1}
-                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </button>
+                                  <div key={index} className="flex items-center space-x-3 bg-white p-3 rounded-lg border">
+                                    <div className="flex-1">
+                                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Time Slot {index + 1}
+                                      </label>
+                                      <select
+                                        value={timeSlot.time}
+                                        onChange={(e) => updateTimeSlot(key, index, 'time', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                      >
+                                        <option value="">Select Time</option>
+                                        {timeOptions.map(time => (
+                                          <option key={time} value={time}>
+                                            {time}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <label className="flex items-center space-x-2 p-2">
+                                        <input
+                                          type="checkbox"
+                                          checked={timeSlot.isAvailable}
+                                          onChange={(e) => updateTimeSlot(key, index, 'isAvailable', e.target.checked)}
+                                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                        />
+                                        <span className="text-sm text-gray-700 whitespace-nowrap">Available</span>
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeTimeSlot(key, index)}
+                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                        title="Remove time slot"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </button>
+                                    </div>
                                   </div>
                                 ))}
-                                <button
-                                  type="button"
-                                  onClick={() => addTimeSlot(key)}
-                                  className="text-sm text-green-600 hover:text-green-700 font-medium"
-                                >
-                                  + Add Time Slot
-                                </button>
+                                
+                                <div className="flex justify-between items-center pt-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => addTimeSlot(key)}
+                                    className="flex items-center space-x-2 text-green-600 hover:text-green-700 font-medium"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                    <span>Add Time Slot</span>
+                                  </button>
+                                  <span className="text-sm text-gray-500">
+                                    Click to add time slots for {label}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -567,20 +1256,21 @@ const SlotSets = () => {
                     </div>
                   </div>
 
-                  <div className="flex space-x-3 pt-4">
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3 pt-6 border-t border-gray-200">
                     <button
                       type="button"
                       onClick={() => {
                         setShowModal(false);
                         resetForm();
                       }}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                     >
                       {editingSlotSet ? 'Update' : 'Create'} Slot Set
                     </button>

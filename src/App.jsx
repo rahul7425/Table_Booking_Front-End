@@ -123,7 +123,6 @@ function App() {
 
         <Route path="/bookings" element={<BookingsList />} />
 
-
         <Route path="/coupons" element={<PermissionRoute allowedRoles={['admin']}>
                 <Coupon />
             </PermissionRoute>} />
