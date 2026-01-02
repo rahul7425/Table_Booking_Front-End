@@ -72,14 +72,16 @@ const Sidebar = ({ isCollapsed }) => {
     { name: "Categories", path: "/items/categories" },
     // { name: "Menu Items", path: "/items/menu-items" },
   ];
-  console.log("User Role in Sidebar:", userRole);
-const visibleMenuItems = menuItems.filter(item => 
+  const visibleMenuItems = menuItems.filter(item => 
     !item.roles || item.roles.includes(userRole)
   );
   return (
     <div className="h-full flex flex-col">
       <div className="p-6 text-green-600 text-2xl font-bold whitespace-nowrap overflow-hidden transition-all duration-300">
-        {isCollapsed ? 'A' : 'Admin'}
+        {isCollapsed 
+          ? (userRole === 'vendor' ? 'V' : 'A') 
+          : (userRole === 'vendor' ? 'Vendor' : 'Admin')
+        }
       </div>
 
 

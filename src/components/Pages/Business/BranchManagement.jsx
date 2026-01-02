@@ -445,9 +445,11 @@ const BranchManagement = () => {
   const { businessId } = useParams();
   const [business, setBusiness] = useState(null);
   const [branches, setBranches] = useState([]);
+  console.log("branches = ", branches);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingBranch, setEditingBranch] = useState(null);
+  console.log("editingBranch = ", editingBranch);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -474,7 +476,6 @@ const BranchManagement = () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(`/details/${businessId}`);
-      console.log("branchsss", response);
       if (response.data.success) {
         setBusiness(response.data.data);
         setBranches(response.data.data.branches || []);
@@ -487,7 +488,6 @@ const BranchManagement = () => {
     }
   };
 
-  console.log("..........sdfsdf...........", branches);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -559,20 +559,24 @@ const BranchManagement = () => {
 
   const updateBranch = async (e) => {
     e.preventDefault();
-
     try {
-      const updateData = {
-        name: formData.name,
-        description: formData.description,
-        address: formData.address,
-        defaultCommissionPercentage: formData.defaultCommissionPercentage,
-        categoryType: formData.categoryType,
-        foodType: formData.foodType
-      };
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('address', JSON.stringify(formData.address));
+      submitData.append('defaultCommissionPercentage', formData.defaultCommissionPercentage);
+      submitData.append('categoryType', formData.categoryType);
+      submitData.append('foodType', formData.foodType);
+
+      // Agar nayi images select ki hain
+      branchImages.forEach(image => {
+        submitData.append('images', image);
+      });
 
       const response = await axiosInstance.put(
-        `/details/${businessId}/branches/${editingBranch._id}`,
-        updateData
+        `/details/${businessId}/branches/${editingBranch.id}`,
+        submitData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
 
       if (response.data.success) {
@@ -588,23 +592,21 @@ const BranchManagement = () => {
   };
 
   const startEditing = (branch) => {
-    setEditingBranch(branch);
+    console.log("Editing branch:", branch);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    setEditingBranch(branch); // branch yahan branchInfo wala object hai
     setFormData({
       name: branch.name || '',
       description: branch.description || '',
       address: branch.address || {
-        plotNo: '',
-        street: '',
-        area: '',
-        city: '',
-        state: '',
-        pincode: ''
+        plotNo: '', street: '', area: '', city: '', state: '', pincode: ''
       },
       defaultCommissionPercentage: branch.defaultCommissionPercentage || 50,
       categoryType: branch.categoryType || 'Restro',
       foodType: branch.foodType || 'Veg'
     });
-    setImagePreviews(branch.fullImageUrls || []);
+    setImagePreviews(branch.images || []);
   };
 
   const resetForm = () => {
@@ -893,7 +895,7 @@ const BranchManagement = () => {
                   />
                 </div>
                 {/* Image Upload (only for new branches) */}
-                {!editingBranch && (
+                {editingBranch && (
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Branch Images
@@ -988,17 +990,17 @@ const BranchManagement = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {branches.map((branch, index) => {
                   const info = branch.branchInfo;
-
+                  console.log("Branch info:", info);
                   return (
                     <div
-                      key={info.id || index}
-                      className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                      key={info.id || info._id || index}
+                      className="flex flex-col border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-white"
                     >
-                      {/* Branch Image */}
+                      {/* 1. Branch Image */}
                       <div className="h-48 bg-gray-200 relative">
-                        {info.fullImageUrls && info.fullImageUrls.length > 0 ? (
+                        {info.images && info.images.length > 0 ? (
                           <img
-                            src={info.fullImageUrls[0]}
+                            src={info.images[0]}
                             alt={info.name}
                             className="w-full h-full object-cover"
                           />
@@ -1009,14 +1011,14 @@ const BranchManagement = () => {
                         )}
                       </div>
 
-                      {/* Branch Info */}
-                      <div className="p-4">
+                      {/* 2. Branch Info - flex-grow ensures footer stays at bottom if cards vary in height */}
+                      <div className="p-4 flex-grow">
                         <h4 className="text-lg font-semibold text-gray-900 truncate mb-2">
                           {info.name}
                         </h4>
 
                         <p className="text-gray-600 text-sm mb-3">
-                          {info.address?.plotNo}, {info.address?.street}, {info.address?.area}
+                          {info.address?.plotNo} {info.address?.street}, {info.address?.area}
                         </p>
 
                         <div className="flex items-center text-sm text-gray-500 mb-3">
@@ -1028,43 +1030,47 @@ const BranchManagement = () => {
 
                         {/* Menu Preview */}
                         {branch.menu?.length > 0 && (
-                          <div className="mb-2">
-                            <p className="text-sm font-medium text-gray-700">
-                              Categories:
-                            </p>
+                          <div className="mb-3">
+                            <p className="text-sm font-medium text-gray-700">Categories:</p>
                             <ul className="text-xs text-gray-600 list-disc ml-4">
-                              {branch.menu.map((cat) => (
+                              {branch.menu.slice(0, 3).map((cat) => (
                                 <li key={cat.categoryId}>{cat.categoryName}</li>
                               ))}
+                              {branch.menu.length > 3 && <li>+ {branch.menu.length - 3} more</li>}
                             </ul>
                           </div>
                         )}
 
-                        {/* Tables count */}
                         <div className="text-xs text-gray-500">
                           Tables: {branch.tables?.length || 0}
                         </div>
                       </div>
 
-                      {/* Actions */}
-                      {/* <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end space-x-2">
-                        <button
-                          onClick={() => startEditing(info)}
-                          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteBranch(info.id)}
-                          className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm"
-                        >
-                          Delete
-                        </button>
-                      </div> */}
+                      {/* 3. Footer Actions - Now inside the main card div */}
+                      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                        <div className="flex space-x-2">
+                          {getStatusBadge && getStatusBadge(info.isActive)}
+                        </div>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => startEditing(info)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit Branch"
+                          >
+                            <Edit className="h-5 w-5" />
+                          </button>
+                          {/* <button
+                            onClick={() => deleteBranch(info._id || info.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete Branch"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button> */}
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
-
               </div>
             )}
           </div>

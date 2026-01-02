@@ -474,7 +474,9 @@ const Category = () => {
     description: '',
     isActive: true,
     businessId: '',
-    branchId: ''
+    branchId: '',
+    image: null,        // NEW image file
+    imagePreview: ""
   });
   const [businesses, setBusinesses] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -674,29 +676,40 @@ const Category = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const payload = {
-        model: 'Category',
-        ...formData
-      };
+      const data = new FormData();
+
+      data.append("model", "Category");
+      data.append("name", formData.name);
+      data.append("type", formData.type);
+      data.append("businessId", formData.businessId);
+      data.append("branchId", formData.branchId);
+      data.append("description", formData.description);
+      data.append("isActive", formData.isActive);
+
+      if (formData.image) {
+        data.append("image", formData.image); // ✅ REAL FILE
+      }
 
       if (editingCategory) {
-        payload.id = editingCategory._id;
-        await axiosInstance.put('/business/update', payload);
-        alert('Category updated successfully');
+        data.append("id", editingCategory._id);
+        await axiosInstance.put("/business/update", data);
+        alert("Category updated successfully");
       } else {
-        await axiosInstance.post('/business/create', payload);
-        alert('Category created successfully');
+        await axiosInstance.post("/business/create", data);
+        alert("Category created successfully");
       }
 
       setShowModal(false);
       resetForm();
       fetchCategories();
     } catch (error) {
-      console.error('Error saving category:', error);
-      alert('Failed to save category');
+      console.error("Error saving category:", error);
+      alert("Failed to save category");
     }
   };
+
 
   const handleEdit = (category) => {
     setEditingCategory(category);
@@ -706,7 +719,9 @@ const Category = () => {
       description: category.description || '',
       isActive: category.isActive,
       businessId: category.businessId,
-      branchId: category.branchId || ''
+      branchId: category.branchId || '',
+      image: category.image || null,  // Assuming fullImageUrl is the URL of the existing image
+      imagePreview: category.fullImageUrl || "",
     });
     if (category.businessId) {
       fetchBranches(category.businessId);
@@ -736,7 +751,9 @@ const Category = () => {
       description: '',
       isActive: true,
       businessId: '',
-      branchId: ''
+      branchId: '',
+      image:  null,  // Assuming fullImageUrl is the URL of the existing image
+      imagePreview: "",
     });
     setEditingCategory(null);
     setBranches([]);
@@ -765,7 +782,16 @@ const Category = () => {
       </div>
     );
   }
-
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    console.log("Selected image file: ", file);
+    setFormData({
+      ...formData,
+      image: file,
+      imagePreview: URL.createObjectURL(file),
+    });
+  };
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -1043,7 +1069,7 @@ const Category = () => {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" encType='multipart/form-data'>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Category Name *
@@ -1125,6 +1151,33 @@ const Category = () => {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       rows="3"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Category Image
+                    </label>
+
+                    {formData.imagePreview && (
+                      <div className="mb-2">
+                        <img
+                          src={formData.imagePreview}
+                          alt="Category Preview"
+                          className="h-24 w-24 object-cover rounded-lg border"
+                        />
+                      </div>
+                    )}
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-green-50 file:text-green-700
+                        hover:file:bg-green-100"
                     />
                   </div>
 
