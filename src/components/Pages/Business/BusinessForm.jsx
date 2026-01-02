@@ -468,8 +468,9 @@ const BusinessForm = () => {
       if (response.data.success) {
         const business = response.data.data;
         setFormData({
-          name: business.name,
-          description: business.description || '',
+          name: business.businessName,
+          description: business.businessDescription
+ || '',
           address: business.address || {
             plotNo: '',
             street: '',
@@ -478,12 +479,13 @@ const BusinessForm = () => {
             state: '',
             pincode: ''
           },
-          isActive: business.isActive,
-          requestStatus: business.requestStatus,
+          isActive: business.businessActive,
+          requestStatus: business.requestStatus || 'pending',
           categoryType: business.categoryType || 'Both',
           foodType: business.foodType || 'Veg'
         });
-        setImagePreviews(business.fullImageUrls || business.images || []);
+        setImagePreviews(business.fullImageUrls || business.businessImages
+ || []);
       }
     } catch (error) {
       console.error('Error fetching business:', error);
